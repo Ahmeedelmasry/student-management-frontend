@@ -59,34 +59,56 @@
                 <td>{{ scanResult?.student?.parentPhone }}</td>
                 <td style="width: 200px">
                   <div class="d-flex flex-wrap ga-2 py-1">
-                    <v-chip
-                      label
-                      density="compact"
-                      v-for="note in scanResult?.student?.unpaidNotes || []"
+                    <div
+                      v-for="(note, i) in scanResult?.student?.unpaidNotes || []"
                       :key="note.id"
-                      color="red"
-                      class="font-weight-bold"
+                      class="d-flex align-center ga-2 justify-space-between w-100 py-1"
                     >
-                      <span>{{ note.title }}</span>
-                      &nbsp; : &nbsp;
-                      <span>{{ note.price }} جـ</span>
-                    </v-chip>
+                      <v-chip
+                        label
+                        density="compact"
+                        v-for="note in scanResult?.student?.unpaidNotes || []"
+                        :key="note.id"
+                        color="red"
+                        class="font-weight-bold"
+                      >
+                        <span>{{ note.title }}</span>
+                        &nbsp; : &nbsp;
+                        <span>{{ note.price }} جـ</span>
+                      </v-chip>
+
+                      <v-btn
+                        density="compact"
+                        flat
+                        color="primary"
+                        style="font-size: 12px"
+                        @click="openConfirmDialog(note, 'Book', i)"
+                        >دفع</v-btn
+                      >
+                    </div>
                   </div>
                 </td>
                 <td style="width: 200px">
                   <div class="d-flex flex-wrap ga-2 py-1">
-                    <v-chip
-                      label
-                      density="compact"
-                      v-for="month in scanResult?.student?.unpaidMonths || []"
+                    <div
+                      v-for="(month, i) in scanResult?.student?.unpaidMonths || []"
                       :key="month.id"
-                      color="red"
-                      class="font-weight-bold"
+                      class="d-flex align-center ga-2 justify-space-between w-100 py-1"
                     >
-                      <span>{{ month.title }}</span>
-                      &nbsp; : &nbsp;
-                      <span>{{ month.monthlyPrice }} جـ</span>
-                    </v-chip>
+                      <v-chip label density="compact" color="red" class="font-weight-bold">
+                        <span>{{ month.title }}</span>
+                        &nbsp; : &nbsp;
+                        <span>{{ month.monthlyPrice }} جـ</span>
+                      </v-chip>
+                      <v-btn
+                        density="compact"
+                        flat
+                        color="primary"
+                        style="font-size: 12px"
+                        @click="openConfirmDialog(month, 'Subscription', i)"
+                        >دفع</v-btn
+                      >
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -95,17 +117,57 @@
         </v-alert>
       </v-expand-transition>
     </v-card>
+    <v-dialog v-model="confirmationDialog" max-width="500">
+      <v-card class="card text-center pt-3 pb-7 px-4">
+        <div class="text-center mb-2">
+          <v-icon size="70" class="global_icon" color="orange">mdi-alert</v-icon>
+        </div>
+        <h3 :style="`white-space: nowrap; font-size: 22px; color: orange`" class="mb-2">
+          {{ confimationTitle }}
+        </h3>
+        <p style="font-size: 19px; color: rgb(138, 138, 138)" class="my-1">
+          {{ confimationMsg }}
+        </p>
+        <div class="text-center d-flex justify-center align-center" style="gap: 10px">
+          <v-btn
+            class="mt-5"
+            width="100"
+            color="orange-darken-2"
+            style="height: 44px; text-transform: capitalize; font-size: 16px; letter-spacing: 0px"
+            elevation="0"
+            :loading="payLoading"
+            @click="payNow"
+            >تاكيد الدفع</v-btn
+          >
+          <v-btn
+            class="mt-5"
+            width="100"
+            color="red"
+            @click="confirmationDialog = false"
+            style="height: 44px; text-transform: capitalize; font-size: 16px; letter-spacing: 0px"
+            elevation="0"
+            >الغاء</v-btn
+          >
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import studentService from '@/services/student' // استدعاء السيرفس التي أنشأناها
-import { useMainStore } from '@/stores'
+import studentService from '@/services/student'
+import paymentService from '@/services/payment'
+import { useMainStore } from '@/stores/index.js'
 
 const barcodeText = ref('')
+const confimationMsg = ref('')
+const confimationTitle = ref('')
 const barcodeInput = ref(null)
+const payLoading = ref(false)
+const confirmationDialog = ref(false)
 const scanResult = ref(null)
+const itemToPay = ref(null)
 
 // دالة التركيز على حقل الإدخال
 const focusInput = () => {
@@ -140,6 +202,45 @@ const handleBarcodeScan = async () => {
   // تنظيف الحقل والعودة للتركيز عليه
   barcodeText.value = ''
   focusInput()
+}
+
+const openConfirmDialog = (item, type, index) => {
+  console.log(item)
+  itemToPay.value = {
+    ...item,
+    index,
+    type,
+    student: scanResult.value.student._id,
+    group: scanResult.value.student.groupId,
+    grade: scanResult.value.student.gradeId,
+    amount: type == 'Book' ? item.price : item.monthlyPrice,
+    book: type == 'Book' ? item.id : null,
+  }
+  confimationTitle.value = `دفع ${type == 'Book' ? 'مذكرة' : 'شهر'} ${item.title}`
+  confimationMsg.value = `هل انت متاكد من دفع ${type == 'Book' ? '' : 'شهر'}  ${item.title}?`
+  confirmationDialog.value = true
+}
+
+const payNow = async () => {
+  payLoading.value = true
+  paymentService
+    .create(itemToPay.value)
+    .then(({ data }) => {
+      if (itemToPay.value.type == 'Book') {
+        scanResult.value.student.unpaidNotes.splice(itemToPay.value.index, 1)
+      } else {
+        scanResult.value.student.unpaidMonths.splice(itemToPay.value.index, 1)
+      }
+      useMainStore().callResponse(true, data.message, 1)
+      confirmationDialog.value = false
+    })
+    .catch((err) => {
+      console.log(err)
+      useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
+    })
+    .finally(() => {
+      payLoading.value = false
+    })
 }
 
 onMounted(() => {

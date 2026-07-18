@@ -125,7 +125,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <Delete />
+    <DeleteWarning />
 
     <v-main class="bg-grey-lighten-4">
       <router-view />
@@ -139,7 +139,7 @@ import { useMainStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import Delete from '@/components/Delete/index.vue'
+import DeleteWarning from '@/components/Delete/index.vue'
 
 // Init Stores
 const authModule = useAuthStore()
