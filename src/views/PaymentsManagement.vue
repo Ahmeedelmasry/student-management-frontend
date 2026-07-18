@@ -61,7 +61,7 @@
         </v-col>
 
         <v-col cols="12" md="2">
-          <v-autocomplete
+          <v-select
             hide-details
             :id="Math.random()"
             v-model="options.type"
@@ -69,7 +69,7 @@
             label="نوع الدفع"
             variant="outlined"
             density="compact"
-            clearable
+            @update:model-value="((options.year = null), (options.month = null))"
           />
         </v-col>
 
@@ -86,7 +86,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="2">
+        <v-col cols="12" md="2" v-if="options.type == 'Subscription'">
           <v-autocomplete
             hide-details
             :id="Math.random()"
@@ -99,13 +99,13 @@
           />
         </v-col>
 
-        <v-col cols="12" md="2">
+        <v-col cols="12" md="2" v-if="options.type == 'Subscription'">
           <v-text-field
             hide-details
             :id="Math.random()"
             v-model.number="options.year"
             type="number"
-            label="السنة"
+            label="السنة (2026)"
             variant="outlined"
             density="compact"
           />
@@ -220,11 +220,11 @@ const options = ref({
   grade: null,
   group: null,
 
-  type: null,
+  type: 'Subscription',
   paymentMethod: null,
 
   month: null,
-  year: new Date().getFullYear(),
+  year: null,
 
   fromDate: null,
   toDate: null,
@@ -359,6 +359,7 @@ const listItems = async () => {
     .list({ ...options.value })
     .then(({ data }) => {
       items.value = data.docs
+      totalItems.value = data.totalDocs
     })
     .catch((err) => console.log(err))
 }
