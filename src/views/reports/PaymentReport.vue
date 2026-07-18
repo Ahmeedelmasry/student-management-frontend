@@ -123,14 +123,24 @@
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
       >
-        <template #item.status="{ item }">
-          <v-chip :color="item.status == 'Paid' ? 'green' : 'red'" size="small" label>
+        <template #item.status="{ item }" class="font-weight-bold">
+          <v-chip
+            :color="item.status == 'Paid' ? 'green' : 'red'"
+            size="small"
+            label
+            class="font-weight-bold"
+          >
             {{ item.status == 'Paid' ? 'مدفوع' : 'غير مدفوع' }}
           </v-chip>
         </template>
 
         <template #item.type="{ item }">
-          <v-chip size="small" label :color="item.type == 'Book' ? 'blue' : 'purple'">
+          <v-chip
+            size="small"
+            label
+            :color="item.type == 'Book' ? 'blue' : 'purple'"
+            class="font-weight-bold"
+          >
             {{ item.type == 'Book' ? 'مذكرة' : 'اشتراك' }}
           </v-chip>
         </template>
