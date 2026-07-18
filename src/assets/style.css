@@ -1,0 +1,25 @@
+/* تعريف خط كايورو من فولدر البابليك */
+@font-face {
+  font-family: 'Cairo';
+  src: url('/Cairo-VariableFont_slnt,wght.ttf') format('truetype-variations');
+  font-weight: 100 900; /* لأن الخط Variable فيدعم كل الأوزان */
+  font-style: normal;
+}
+
+/* تطبيق الخط على العناصر الأساسية في المتصفح كخط احتياطي */
+html,
+body {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.v-table th {
+  background-color: rgb(234, 234, 234);
+  font-weight: 700;
+  border-left: 1px solid rgb(213, 213, 213);
+  border-top: 1px solid rgb(213, 213, 213);
+}
+
+.v-table td {
+  border-left: 1px solid rgb(231, 231, 231);
+  border-bottom: 1px solid rgb(231, 231, 231);
+}
