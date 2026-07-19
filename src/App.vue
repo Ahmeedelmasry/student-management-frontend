@@ -114,6 +114,11 @@
               <v-icon size="8">mdi-circle</v-icon>
             </template>
           </v-list-item>
+          <v-list-item title="تقرير الامتحانات" :to="{ name: 'ExamReport' }" color="primary">
+            <template #prepend>
+              <v-icon size="8">mdi-circle</v-icon>
+            </template>
+          </v-list-item>
         </v-list-group>
 
         <v-list-item

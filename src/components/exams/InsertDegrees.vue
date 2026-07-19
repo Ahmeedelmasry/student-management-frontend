@@ -68,7 +68,7 @@
             <template #item.notes="{ item }">
               <v-text-field
                 :id="Math.random()"
-                v-model="item.examNotes"
+                v-model="item.notes"
                 variant="outlined"
                 density="compact"
                 hide-details

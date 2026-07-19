@@ -23,6 +23,12 @@ class ModuleService extends ApiHelper {
       params,
     })
   }
+
+  async getExamsReport(examId, params) {
+    return await httpClient.get(`${this.url}/exams/${examId}`, {
+      params,
+    })
+  }
 }
 
 export default new ModuleService()

@@ -100,12 +100,20 @@ const routes = [
       title: 'التقارير - تقرير الحضور',
     },
   },
-    {
+  {
     path: '/reports/payment-report',
     name: 'PaymentReport',
     component: () => import('@/views/reports/PaymentReport.vue'),
     meta: {
       title: 'التقارير - تقرير المدفوعات',
+    },
+  },
+  {
+    path: '/reports/exam-report',
+    name: 'ExamReport',
+    component: () => import('@/views/reports/ExamReport.vue'),
+    meta: {
+      title: 'التقارير - تقرير الامتحانات',
     },
   },
 ]
