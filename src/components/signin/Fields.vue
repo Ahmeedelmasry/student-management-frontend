@@ -106,7 +106,7 @@ const signIn = async () => {
     if (result) {
       $cookies.set('logger', token.value, loggerData.value.expFront)
 
-      await router.push({ name: 'Dashboard' })
+      await router.push({ name: 'ScanAttendance' })
     }
     loading.value = false
   }

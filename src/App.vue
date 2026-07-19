@@ -39,12 +39,12 @@
       width="300"
     >
       <v-list density="compact" nav class="text-right" style="direction: rtl">
-        <v-list-item
+        <!-- <v-list-item
           prepend-icon="mdi-barcode-scan"
           title="الصفحة الرئيسية"
           to="/"
           color="primary"
-        ></v-list-item>
+        ></v-list-item> -->
         <v-list-item
           prepend-icon="mdi-account"
           title="تسجيل الحضور"

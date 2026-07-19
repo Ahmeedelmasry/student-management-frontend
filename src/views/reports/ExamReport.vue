@@ -401,11 +401,11 @@ const headers = [
     title: 'ملاحظات',
     key: 'notes',
   },
-  {
-    title: 'العمليات',
-    key: 'actions',
-    sortable: false,
-  },
+  // {
+  //   title: 'العمليات',
+  //   key: 'actions',
+  //   sortable: false,
+  // },
 ]
 
 // Watchers

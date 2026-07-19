@@ -29,6 +29,12 @@ class ModuleService extends ApiHelper {
       params,
     })
   }
+
+  async getDashboard(params) {
+    return await httpClient.get(`${this.url}/dashboard`, {
+      params,
+    })
+  }
 }
 
 export default new ModuleService()

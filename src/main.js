@@ -13,6 +13,7 @@ import '@/assets/style.css'
 import { createPinia } from 'pinia'
 import VueCookies from 'vue-cookies'
 import '@vuepic/vue-datepicker/dist/main.css'
+import VueApexCharts from 'vue3-apexcharts'
 
 window.axios = axiosClient
 window.$cookie = VueCookies
@@ -32,8 +33,8 @@ const vuetify = createVuetify({
       },
     },
   },
-    locale: {
-    locale: "ar",
+  locale: {
+    locale: 'ar',
     rtl: {
       ar: true,
     },
@@ -44,4 +45,5 @@ const app = createApp(App)
 app.use(router) // تفعيل الراوتر
 app.use(vuetify)
 app.use(pinia)
+app.use(VueApexCharts)
 app.mount('#app')
