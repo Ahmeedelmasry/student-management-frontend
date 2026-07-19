@@ -12,6 +12,40 @@
       </v-col>
     </v-row>
 
+    <v-card class="mb-4">
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="4">
+            <v-text-field
+              :id="Math.random()"
+              v-model="options.searchWord"
+              label="بحث باسم المجموعة"
+              prepend-inner-icon="mdi-magnify"
+              density="compact"
+              variant="outlined"
+              hide-details
+              clearable
+            />
+          </v-col>
+
+          <v-col cols="12" md="4">
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="options.grade"
+              :items="grades"
+              item-title="name"
+              item-value="_id"
+              label="الصف الدراسي"
+              density="compact"
+              variant="outlined"
+              hide-details
+              clearable
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+
     <!-- items Table -->
     <v-card class="flex-grow-1">
       <v-data-table-server
@@ -74,12 +108,13 @@ import { useMainStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth/auth'
 import CreateItemDialog from '@/components/groups/CreateItem.vue'
+import gradeService from '@/services/grade'
 
 const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())
 
 const items = ref([])
-
+const grades = ref([])
 const loading = ref(false)
 
 const editDialog = ref(false)
@@ -138,7 +173,7 @@ watch(
 
 const listItems = async () => {
   await groupService
-    .list({ ...options })
+    .list({ ...options.value })
     .then(({ data }) => {
       items.value = data.docs
       totalItems.value = data.totalDocs
@@ -152,6 +187,15 @@ const openEditDialog = (item) => {
   editDialog.value = true
 }
 
+const getGrades = async () => {
+  await gradeService
+    .list({ limit: 1000 })
+    .then(({ data }) => {
+      grades.value = data.docs
+    })
+    .catch((err) => console.log(err))
+}
+
 const openDeleteDialog = (item) => {
   useMainStore().handleErr('alert', 'حذف المجموعة', `هل انت متاكد من حذف هذه المجموعة?`, {
     ...item,
@@ -161,6 +205,6 @@ const openDeleteDialog = (item) => {
 }
 
 onMounted(async () => {
-  listItems()
+  await Promise.all([listItems(), getGrades()])
 })
 </script>
