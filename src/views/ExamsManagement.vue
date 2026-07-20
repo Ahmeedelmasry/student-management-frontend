@@ -292,7 +292,7 @@ watch(
 )
 
 const relatedGroups = computed(() => {
-  const gradeId = options.grade
+  const gradeId = options.value.grade
   if (gradeId) {
     return grades.value.find((e) => e._id == gradeId)?.groups || []
   }

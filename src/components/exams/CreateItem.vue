@@ -159,7 +159,7 @@ const item = ref({
   maxScore: null,
   duration: null,
   notes: '',
-  status: 'Draft',
+  status: 'Published',
   isActive: true,
 })
 
@@ -226,7 +226,7 @@ const closeModal = () => {
     maxScore: null,
     duration: null,
     notes: '',
-    status: 'Draft',
+    status: 'Published',
     isActive: true,
   }
   emits('leave')

@@ -5,13 +5,13 @@
         <span> عرض تفاصيل حضور الطالب: ( {{ toPreview.fullName }} ) </span>
 
         <div v-if="details.sessions" class="d-flex align-center ga-2" style="font-size: 15px">
-          <v-card class="pa-3 font-weight-bold" flat color="red" variant="outlined">
+          <v-card class="pa-3 font-weight-bold" flat color="success" variant="outlined">
             <span>اجمالي حصص الحضور: </span>
             <span>{{
               details.sessions ? details.sessions.filter((e) => e.attended).length : 0
             }}</span>
           </v-card>
-          <v-card class="pa-3 font-weight-bold" flat color="success" variant="outlined">
+          <v-card class="pa-3 font-weight-bold" flat color="red" variant="outlined">
             <span>اجمالي حصص الغياب: </span>
             <span>{{
               details.sessions ? details.sessions.filter((e) => !e.attended).length : 0

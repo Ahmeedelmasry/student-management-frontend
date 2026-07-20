@@ -228,7 +228,10 @@ const createItem = async () => {
   loading.value = true
 
   studentService
-    .create(item.value)
+    .create({
+      ...item.value,
+      registrationDate: new Date(item.value.registrationDate).setHours(23, 59, 0),
+    })
     .then(({ data }) => {
       useMainStore().callResponse(true, data.message, 1)
       emits('refreshTableData')
@@ -246,7 +249,10 @@ const updateItem = async () => {
   if (!(await v$.value.$validate())) return
 
   loading.value = true
-  const body = { ...item.value }
+  const body = {
+    ...item.value,
+    registrationDate: new Date(item.value.registrationDate).setHours(23, 59, 0),
+  }
 
   if (!item.password) delete body.password
 

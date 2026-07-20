@@ -39,81 +39,86 @@
       width="300"
     >
       <v-list density="compact" nav class="text-right" style="direction: rtl">
-        <!-- <v-list-item
-          prepend-icon="mdi-barcode-scan"
-          title="الصفحة الرئيسية"
-          to="/"
-          color="primary"
-        ></v-list-item> -->
         <v-list-item
-          prepend-icon="mdi-account"
+          prepend-icon="mdi-qrcode-scan"
           title="تسجيل الحضور"
           :to="{ name: 'ScanAttendance' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-account-multiple-plus"
-          title="إدارة الطلاب"
-          to="/students"
-          :to="{ name: 'Students' }"
-        ></v-list-item>
-        <v-list-item
-          prepend-icon="mdi-account"
+          prepend-icon="mdi-account-cog"
           title="المسؤولين"
           :to="{ name: 'Admins' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-cash-register"
+          prepend-icon="mdi-school"
           title="الصفوف الدراسية"
           :to="{ name: 'Grades' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-cash-register"
+          prepend-icon="mdi-account-group"
           title="المجموعات الدراسية"
           :to="{ name: 'Groups' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-cash-register"
-          title="ادارة المحاضرات"
+          prepend-icon="mdi-presentation-play"
+          title="إدارة المحاضرات"
           :to="{ name: 'Sessions' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-cash-register"
-          title="ادارة الماليات"
+          prepend-icon="mdi-account-multiple"
+          title="إدارة الطلاب"
+          :to="{ name: 'Students' }"
+          color="primary"
+        />
+
+        <v-list-item
+          prepend-icon="mdi-cash-multiple"
+          title="إدارة الماليات"
           :to="{ name: 'Payments' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-book"
-          title="ادارة المذكرات"
+          prepend-icon="mdi-book-open-page-variant"
+          title="إدارة المذكرات"
           :to="{ name: 'Books' }"
           color="primary"
-        ></v-list-item>
+        />
+
         <v-list-item
-          prepend-icon="mdi-book"
-          title="ادارة الامتحانات"
+          prepend-icon="mdi-file-document-edit"
+          title="إدارة الامتحانات"
           :to="{ name: 'Exams' }"
           color="primary"
-        ></v-list-item>
+        />
 
         <v-list-group value="reports">
           <template #activator="{ props }">
-            <v-list-item v-bind="props" prepend-icon="mdi-account-group" title="التقارير" />
+            <v-list-item v-bind="props" prepend-icon="mdi-chart-box" title="التقارير" />
           </template>
+
           <v-list-item title="تقرير الحضور" :to="{ name: 'AttendanceReport' }" color="primary">
             <template #prepend>
               <v-icon size="8">mdi-circle</v-icon>
             </template>
           </v-list-item>
+
           <v-list-item title="تقرير المدفوعات" :to="{ name: 'PaymentReport' }" color="primary">
             <template #prepend>
               <v-icon size="8">mdi-circle</v-icon>
             </template>
           </v-list-item>
+
           <v-list-item title="تقرير الامتحانات" :to="{ name: 'ExamReport' }" color="primary">
             <template #prepend>
               <v-icon size="8">mdi-circle</v-icon>
@@ -126,7 +131,7 @@
           title="تسجيل خروج"
           class="text-red"
           @click="logout"
-        ></v-list-item>
+        />
       </v-list>
     </v-navigation-drawer>
 

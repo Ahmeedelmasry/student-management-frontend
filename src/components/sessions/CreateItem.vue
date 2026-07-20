@@ -56,6 +56,7 @@
               :disabled="!item.group"
               style="direction: ltr"
               :filters="filters"
+              placeholder="تاريخ الحصة"
             />
           </v-col>
 
