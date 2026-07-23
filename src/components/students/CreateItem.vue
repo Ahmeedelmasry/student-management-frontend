@@ -230,7 +230,7 @@ const createItem = async () => {
   studentService
     .create({
       ...item.value,
-      registrationDate: new Date(item.value.registrationDate).setHours(23, 59, 0),
+      registrationDate: new Date(item.value.registrationDate).setHours(23, 59, 59),
     })
     .then(({ data }) => {
       useMainStore().callResponse(true, data.message, 1)

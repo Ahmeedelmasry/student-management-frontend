@@ -97,6 +97,16 @@
                   @click="openEditDialog(item)"
                 ></v-list-item>
                 <v-list-item
+                  title="تسليم المذكرة"
+                  append-icon="mdi-book-check"
+                  @click="openBookAssignDialog(item)"
+                ></v-list-item>
+                <v-list-item
+                  title="الغاء تسليم المذكرة"
+                  append-icon="mdi-book-remove"
+                  @click="openBookUnassignDialog(item)"
+                ></v-list-item>
+                <v-list-item
                   title="حذف"
                   append-icon="mdi-delete"
                   @click="openDeleteDialog(item)"
@@ -114,6 +124,20 @@
       :toUpdate="toUpdate"
       @refreshTableData="listItems"
     />
+    <BookAssignDialog
+      v-model="bookAssignDialog"
+      @leave="((bookAssignDialog = false), (toUpdate = {}))"
+      :item="toUpdate"
+      @refreshTableData="listItems"
+      v-if="bookAssignDialog"
+    />
+    <BookUnassignDialog
+      v-model="bookUnassignDialog"
+      @leave="((bookUnassignDialog = false), (toUpdate = {}))"
+      :item="toUpdate"
+      @refreshTableData="listItems"
+      v-if="bookUnassignDialog"
+    />
   </v-container>
 </template>
 
@@ -127,6 +151,8 @@ import { useMainStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth/auth'
 import CreateItemDialog from '@/components/books/CreateItem.vue'
+import BookAssignDialog from '@/components/books/BookAssignDialog.vue'
+import BookUnassignDialog from '@/components/books/BookUnassignDialog.vue'
 
 const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())
@@ -164,6 +190,8 @@ const bookTypes = [
 const totalItems = ref(0)
 
 const editDialog = ref(false)
+const bookAssignDialog = ref(false)
+const bookUnassignDialog = ref(false)
 const toDelete = ref(null)
 const headers = [
   {
@@ -240,6 +268,20 @@ const openEditDialog = (item) => {
   toUpdate.value = { ...item }
 
   editDialog.value = true
+}
+
+const openBookAssignDialog = (item) => {
+  bookAssignDialog.value = true
+  setTimeout(() => {
+    toUpdate.value = { ...item }
+  }, 100)
+}
+
+const openBookUnassignDialog = (item) => {
+  bookUnassignDialog.value = true
+  setTimeout(() => {
+    toUpdate.value = { ...item }
+  }, 100)
 }
 
 const openDeleteDialog = (item) => {
