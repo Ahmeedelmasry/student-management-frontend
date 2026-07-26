@@ -27,7 +27,7 @@
 
     <v-app-bar color="primary" elevation="2" v-if="$route.name != 'Login'">
       <v-app-bar-title class="font-weight-bold text-right text-auto" style="direction: rtl">
-        لوحة تحكم المعلم الذكية 🎓
+        مستر هشام عبيد
       </v-app-bar-title>
       <v-btn icon @click="themeStore.toggleTheme()">
         <v-icon>
