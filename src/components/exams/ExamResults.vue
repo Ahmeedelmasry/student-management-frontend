@@ -1,12 +1,12 @@
 <template>
-  <v-dialog @after-leave="closeModal" max-width="1200">
+  <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 font-weight-bold">
         عرض نتائج الطلاب لامتحان: ( {{ selectedExam.name }} )
       </v-card-title>
       <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
         <v-row class="mb-4 align-center flex-grow-0">
-          <v-col cols="12" class="pt-0">
+          <v-col cols="4" class="pt-0">
             <v-autocomplete
               :id="Math.random()"
               v-model="options.groupIds"
@@ -19,6 +19,18 @@
               hide-details
               multiple
               chips
+              clearable
+              :disabled="!selectedExam?._id"
+            />
+          </v-col>
+          <v-col cols="4" class="pt-0">
+            <v-text-field
+              :id="Math.random()"
+              v-model="options.searchWord"
+              label="بحث"
+              variant="outlined"
+              density="compact"
+              hide-details
               clearable
               :disabled="!selectedExam?._id"
             />
@@ -130,6 +142,7 @@ const headers = [
 
 const options = ref({
   groupIds: [],
+  searchWord: null,
 })
 
 // Watchers
@@ -196,7 +209,10 @@ const closeModal = () => {
 const listItems = async () => {
   loading.value = true
   examService
-    .getExamResults(selectedExam._id)
+    .getExamResults(selectedExam._id, {
+      groupIds: options.value.groupIds.join(','),
+      searchWord: options.value.searchWord,
+    })
     .then(({ data }) => {
       items.value = data.map((e) => ({ ...e, scoreClone: e.score }))
       itemsClone.value = cloneDeep(items.value)

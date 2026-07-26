@@ -1,12 +1,12 @@
 <template>
-  <v-dialog @after-leave="closeModal" max-width="1200">
+  <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 font-weight-bold">
         تسجيل درجات الطلاب لامتحان: ( {{ selectedExam.name }} )
       </v-card-title>
       <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
         <v-row class="mb-4 align-center flex-grow-0">
-          <v-col cols="12" class="pt-0">
+          <v-col class="pt-0">
             <v-autocomplete
               :id="Math.random()"
               v-model="options.groupIds"
@@ -19,6 +19,19 @@
               hide-details
               multiple
               chips
+              clearable
+              :disabled="!selectedExam?._id"
+            />
+          </v-col>
+
+          <v-col cols="4" class="pt-0">
+            <v-text-field
+              :id="Math.random()"
+              v-model="options.searchWord"
+              label="بحث"
+              variant="outlined"
+              density="compact"
+              hide-details
               clearable
               :disabled="!selectedExam?._id"
             />
@@ -63,12 +76,13 @@
                 density="compact"
                 hide-details
                 max-width="200px"
+                :disabled="item.isAbsent"
               />
             </template>
             <template #item.notes="{ item }">
               <v-text-field
                 :id="Math.random()"
-                v-model="item.notes"
+                v-model="item.examNotes"
                 variant="outlined"
                 density="compact"
                 hide-details
@@ -127,6 +141,7 @@ const headers = [
 
 const options = ref({
   groupIds: [],
+  searchWord: null,
 })
 
 // Watchers
@@ -171,6 +186,7 @@ const listItems = async () => {
   examService
     .getExamStudents(selectedExam._id, {
       groupIds: options.value.groupIds.join(','),
+      searchWord: options.value.searchWord,
     })
     .then(({ data }) => {
       items.value = data
@@ -191,7 +207,7 @@ const saveResults = async () => {
       group: item.group._id || item.group,
       score: Number(item.score) || 0,
       isAbsent: !!item.isAbsent,
-      notes: item.notes || '',
+      notes: item.examNotes || '',
     })),
   }
 

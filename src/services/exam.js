@@ -17,8 +17,10 @@ class ModuleService extends ApiHelper {
     return await httpClient.post(`${apiUrl}/exam-results/save`, body)
   }
 
-  async getExamResults(examId) {
-    return await httpClient.get(`${apiUrl}/exam-results/${examId}`)
+  async getExamResults(examId, params) {
+    return await httpClient.get(`${apiUrl}/exam-results/${examId}`, {
+      params,
+    })
   }
 
   async updateExamResults(body) {

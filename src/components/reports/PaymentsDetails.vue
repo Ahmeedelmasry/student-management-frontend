@@ -1,5 +1,5 @@
 <template>
-  <v-dialog @after-leave="closeModal" max-width="1200">
+  <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 d-flex align-center justify-space-between">
         <v-row>

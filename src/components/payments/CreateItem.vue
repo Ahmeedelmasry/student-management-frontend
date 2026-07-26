@@ -56,7 +56,7 @@
             />
           </v-col>
 
-          <v-col cols="12" v-if="item.type == 'Book'">
+          <v-col cols="12" md="6" v-if="item.type == 'Book'">
             <v-autocomplete
               :id="Math.random()"
               v-model="item.book"

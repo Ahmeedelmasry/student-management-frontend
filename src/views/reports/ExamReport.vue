@@ -3,7 +3,7 @@
     <v-row class="align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon  class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
           تقرير الامتحانات
         </h2>
       </v-col>
@@ -12,6 +12,21 @@
     <v-card class="mb-4">
       <v-card-text>
         <v-row>
+          <v-col>
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="gradeId"
+              :items="grades"
+              item-title="name"
+              item-value="_id"
+              label="الصف الدراسي"
+              density="compact"
+              variant="outlined"
+              hide-details
+              @update:model-value="((options.group = null), (items = []), (options.examId = null))"
+              clearable
+            />
+          </v-col>
           <v-col>
             <v-autocomplete
               :id="Math.random()"
@@ -25,6 +40,7 @@
               hide-details
               clearable
               @update:model-value="options.group = null"
+              :disabled="!gradeId"
             />
           </v-col>
 
@@ -300,15 +316,18 @@ import { ref, onMounted, watch, computed } from 'vue'
 
 import reportService from '@/services/report'
 import examService from '@/services/exam'
+import gradeService from '@/services/grade'
 import moment from 'moment'
 import AttendanceDetails from '@/components/reports/AttendanceDetails.vue'
 
 const items = ref([])
 const exams = ref([])
+const grades = ref([])
 
 const loading = ref(false)
 const toPreview = ref({})
 const previewDetailsDialog = ref(false)
+const gradeId = ref(null)
 
 const options = ref({
   examId: null,
@@ -421,6 +440,15 @@ watch(
   { deep: true },
 )
 
+watch(
+  () => gradeId.value,
+  (newVal) => {
+    if (newVal) {
+      getExams()
+    }
+  },
+)
+
 const relatedGroups = computed(() => {
   if (!options.value.examId) return []
 
@@ -445,14 +473,23 @@ const listItems = async () => {
 
 const getExams = async () => {
   await examService
-    .list({ limit: 10000 })
+    .list({ limit: 100000, grade: gradeId.value })
     .then(({ data }) => {
       exams.value = data.docs
     })
     .catch((err) => console.log(err))
 }
 
+const getGrades = async () => {
+  await gradeService
+    .list({ limit: 10000 })
+    .then(({ data }) => {
+      grades.value = data.docs
+    })
+    .catch((err) => console.log(err))
+}
+
 onMounted(async () => {
-  getExams()
+  getGrades()
 })
 </script>

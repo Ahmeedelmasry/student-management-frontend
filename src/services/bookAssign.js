@@ -10,8 +10,10 @@ class ModuleService extends ApiHelper {
     return await httpClient.get(`${this.url}/unassigned-students/${bookId}`, { params })
   }
 
-  async bulkAssignStudents(bookId, body) {
-    return await httpClient.post(`${this.url}/assign-students/${bookId}`, body)
+  async bulkAssignStudents(bookId, body, params) {
+    return await httpClient.post(`${this.url}/assign-students/${bookId}`, body, {
+      params,
+    })
   }
 
   async getAssignedStudents(bookId, params) {

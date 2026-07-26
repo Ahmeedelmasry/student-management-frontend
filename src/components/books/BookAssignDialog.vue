@@ -91,12 +91,20 @@
 
         <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn>
         <v-btn
-          color="primary"
+          color="blue"
           :loading="saveLoading"
           :disabled="!selectedRows.length"
           @click="saveData"
         >
-          تاكيد التسليم
+          تسليم فقط
+        </v-btn>
+        <v-btn
+          color="primary"
+          :loading="saveLoading"
+          :disabled="!selectedRows.length"
+          @click="saveData(true)"
+        >
+          دفع وتسليم
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -221,9 +229,9 @@ const listAllGroups = async () => {
     })
 }
 
-const saveData = async () => {
+const saveData = async (pay = false) => {
   await bookAssignService
-    .bulkAssignStudents(item._id, selectedRows.value)
+    .bulkAssignStudents(item._id, selectedRows.value, { payNow: pay })
     .then(({ data }) => {
       useMainStore().callResponse(true, data.message, 1)
       closeModal()
