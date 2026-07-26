@@ -139,6 +139,9 @@ router.beforeEach(async (to, from, next) => {
     if (to.name == 'Login') {
       return next({ name: 'Dashboard' })
     }
+    if (to.name == 'Dashboard') {
+      return next({ name: 'ScanAttendance' })
+    }
   }
   return next()
 })
