@@ -157,6 +157,7 @@ import { useRouter } from 'vue-router'
 import DeleteWarning from '@/components/Delete/index.vue'
 import { useTheme } from 'vuetify'
 import { useThemeStore } from '@/stores/theme/theme'
+import { onMounted } from 'vue'
 
 // Init Stores
 const authModule = useAuthStore()
@@ -169,7 +170,6 @@ const router = useRouter()
 
 // Data
 const theme = useTheme()
-theme.global.name.value = themeStore.theme
 
 const { loggerData, token } = storeToRefs(authModule)
 const { callMsg, callSuccess, callColor } = storeToRefs(mainModule)
@@ -217,4 +217,8 @@ const logout = () => {
     }, 400)
   }, 300)
 }
+
+onMounted(() => {
+  theme.global.name.value = themeStore.theme
+})
 </script>

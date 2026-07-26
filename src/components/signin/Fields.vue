@@ -47,7 +47,7 @@
           </div>
         </v-col>
         <v-col cols="12" class="pt-0">
-          <v-btn width="100%" color="orange-darken-2" height="45" :loading="loading" type="submit"
+          <v-btn width="100%" color="primary" height="45" :loading="loading" type="submit"
             >تسجيل دخول</v-btn
           >
         </v-col>
