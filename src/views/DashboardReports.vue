@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center">
       <v-col cols="12">
         <h2 class="text-h4 font-weight-bold">
-          <v-icon color="primary" class="me-2"> mdi-view-dashboard </v-icon>
+          <v-icon  class="text-auto me-2"> mdi-view-dashboard </v-icon>
 
           لوحة التحكم
         </h2>

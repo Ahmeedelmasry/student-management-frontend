@@ -2,7 +2,7 @@
   <div class="sign_in_page pa-0 my-5 pt-6 px-16" style="height: 94dvh !important">
     <v-container
       fluid
-      style="box-shadow: rgba(0, 0, 0, 0.15) 0px 0.5rem 1rem; border-radius: 10px; overflow: hidden"
+      style="box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 39px; border-radius: 10px; overflow: hidden"
       class="py-0 h-100 pl-0 pr-10"
     >
       <v-row class="pa-0 h-100">

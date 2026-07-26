@@ -120,16 +120,20 @@ const emits = defineEmits('leave', 'refreshTableData')
 const grades = ref([])
 const bookTypes = ref([
   {
-    title: 'مذكرة',
+    title: 'كتاب شرح',
     value: 'Book',
+  },
+  {
+    title: 'قصة',
+    value: 'Story',
+  },
+  {
+    title: 'مهارات',
+    value: 'Skills',
   },
   {
     title: 'مراجعة',
     value: 'Revision',
-  },
-  {
-    title: 'بوكليت',
-    value: 'Booklet',
   },
 ])
 

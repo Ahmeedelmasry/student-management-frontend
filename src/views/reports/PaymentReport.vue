@@ -2,8 +2,8 @@
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
-        <h2 class="text-h4 font-weight-bold text-grey-darken-3">
-          <v-icon color="primary" class="me-2">mdi-account-multiple-plus</v-icon>
+        <h2 class="text-h4 font-weight-bold text-auto">
+          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
           تقرير المدفوعات
         </h2>
       </v-col>
@@ -53,60 +53,6 @@
               clearable
             />
           </v-col>
-
-          <v-col>
-            <v-select
-              :id="Math.random()"
-              v-model="options.type"
-              :items="typess"
-              item-title="title"
-              item-value="value"
-              label="نوع العملية"
-              density="compact"
-              variant="outlined"
-              hide-details
-              clearable
-            />
-          </v-col>
-
-          <v-col>
-            <v-select
-              :id="Math.random()"
-              v-model="options.status"
-              :items="statuses"
-              item-title="title"
-              item-value="value"
-              label="حالة الدفع"
-              density="compact"
-              variant="outlined"
-              hide-details
-              clearable
-            />
-          </v-col>
-
-          <v-col>
-            <v-date-input
-              :id="Math.random()"
-              v-model="options.fromDate"
-              label="من تاريخ"
-              density="compact"
-              variant="outlined"
-              hide-details
-              clearable
-            />
-          </v-col>
-
-          <v-col>
-            <v-date-input
-              :id="Math.random()"
-              v-model="options.toDate"
-              label="إلى تاريخ"
-              density="compact"
-              variant="outlined"
-              hide-details
-              clearable
-            />
-          </v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -123,34 +69,26 @@
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
       >
-        <template #item.status="{ item }" class="font-weight-bold">
-          <v-chip
-            :color="item.status == 'Paid' ? 'green' : 'red'"
-            size="small"
-            label
-            class="font-weight-bold"
-          >
-            {{ item.status == 'Paid' ? 'مدفوع' : 'غير مدفوع' }}
-          </v-chip>
+        <template #item.paidBooks="{ item }">
+          <v-chip color="success" label density="compact" class="font-weight-bold">{{
+            item.books?.paid?.length
+          }}</v-chip>
         </template>
-
-        <template #item.type="{ item }">
-          <v-chip
-            size="small"
-            label
-            :color="item.type == 'Book' ? 'blue' : 'purple'"
-            class="font-weight-bold"
-          >
-            {{ item.type == 'Book' ? 'مذكرة' : 'اشتراك' }}
-          </v-chip>
+        <template #item.unpaidBooks="{ item }">
+          <v-chip color="error" label density="compact" class="font-weight-bold">{{
+            item.books?.unpaid?.length
+          }}</v-chip>
         </template>
-
-        <template #item.amount="{ item }"> {{ item.amount }} ج.م </template>
-
-        <template #item.paymentDate="{ item }">
-          {{ item.paymentDate ? moment(item.paymentDate).format('YYYY/MM/DD') : '...' }}
+        <template #item.paidMonths="{ item }">
+          <v-chip color="success" label density="compact" class="font-weight-bold">{{
+            item.subscriptions?.paid?.length
+          }}</v-chip>
         </template>
-
+        <template #item.unpaidMonths="{ item }">
+          <v-chip color="error" label density="compact" class="font-weight-bold">{{
+            item.subscriptions?.unpaid?.length
+          }}</v-chip>
+        </template>
         <template #item.actions="{ item }">
           <v-btn size="small" variant="text">
             <v-icon>mdi-dots-vertical</v-icon>
@@ -168,11 +106,11 @@
       </v-data-table-server>
     </v-card>
 
-    <AttendanceDetails
+    <PayementsDetails
       v-model="previewDetailsDialog"
       @leave="((previewDetailsDialog = false), (toPreview = {}))"
       :toPreview="toPreview"
-      @refreshTableData="listItems"
+      @refreshData="listItems"
     />
   </v-container>
 </template>
@@ -182,8 +120,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 
 import reportService from '@/services/report'
 import gradeService from '@/services/grade'
-import moment from 'moment'
-import AttendanceDetails from '@/components/reports/AttendanceDetails.vue'
+import PayementsDetails from '@/components/reports/PaymentsDetails.vue'
 
 const items = ref([])
 const grades = ref([])
@@ -196,40 +133,9 @@ const options = ref({
   searchWord: '',
   grade: null,
   group: null,
-  type: null,
-  status: null,
-  fromDate: null,
-  toDate: null,
-
   page: 1,
   limit: 10,
 })
-
-const typess = [
-  {
-    title: 'الكل',
-    value: null,
-  },
-  {
-    title: 'اشتراك',
-    value: 'Subscription',
-  },
-  {
-    title: 'مذكرة',
-    value: 'Book',
-  },
-]
-
-const statuses = [
-  {
-    title: 'مدفوع',
-    value: 'Paid',
-  },
-  {
-    title: 'غير مدفوع',
-    value: 'Unpaid',
-  },
-]
 
 const totalItems = ref(0)
 
@@ -251,28 +157,20 @@ const headers = [
     key: 'group.name',
   },
   {
-    title: 'نوع العملية',
-    key: 'type',
+    title: 'مذكرات مدفوعة',
+    key: 'paidBooks',
   },
   {
-    title: 'شهر / مذكرة',
-    key: 'itemName',
+    title: 'مذكرات غير مدفوعة',
+    key: 'unpaidBooks',
   },
   {
-    title: 'القيمة',
-    key: 'amount',
+    title: 'اشتراكات مدفوعة',
+    key: 'paidMonths',
   },
   {
-    title: 'الحالة',
-    key: 'status',
-  },
-  {
-    title: 'تاريخ الدفع',
-    key: 'paymentDate',
-  },
-  {
-    title: 'الوصف',
-    key: 'description',
+    title: 'اشتراكات غير مدفوعة',
+    key: 'unpaidMonths',
   },
   {
     title: 'العمليات',
@@ -302,7 +200,6 @@ const listItems = async () => {
   await reportService
     .getPaymentsReport({ ...options.value })
     .then(({ data }) => {
-      console.log(data)
       items.value = data.docs
       totalItems.value = data.totalDocs
     })

@@ -2,10 +2,10 @@
   <v-container class="fill-height justify-center" style="direction: rtl">
     <v-card width="100%" class="pa-6 text-center" elevation="4" rounded="lg">
       <v-icon size="64" color="primary" class="mb-4">mdi-barcode-scan</v-icon>
-      <v-card-title class="text-h5 font-weight-bold justify-center"
-        >سیستم تسجيل الحضور الذكي 🛡️</v-card-title
+      <v-card-title class="text-h5 font-weight-bold justify-center">تسجيل حضور الطالب</v-card-title>
+      <v-card-subtitle class="mb-6"
+        >يرجى تمرير باركود الطالب أمام السكانر او كتابته يدويا</v-card-subtitle
       >
-      <v-card-subtitle class="mb-6">يرجى تمرير باركود الطالب أمام السكنر</v-card-subtitle>
 
       <v-text-field
         :id="Math.random()"
@@ -171,7 +171,9 @@ const itemToPay = ref(null)
 
 // دالة التركيز على حقل الإدخال
 const focusInput = () => {
-  if (barcodeInput.value) barcodeInput.value.focus()
+  if (barcodeInput.value) {
+    barcodeInput.value.focus()
+  }
 }
 
 // معالجة مسح الباركود

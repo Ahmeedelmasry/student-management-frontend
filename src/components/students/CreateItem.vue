@@ -46,7 +46,6 @@
               label="الباركود"
               variant="outlined"
               density="compact"
-              :error-messages="v$.barcode.$errors.map((e) => e.$message)"
             />
           </v-col>
 
@@ -176,9 +175,9 @@ const rules = computed(() => ({
     required: helpers.withMessage('هذا الحقل مطلوب', required),
   },
 
-  barcode: {
-    required: helpers.withMessage('هذا الحقل مطلوب', required),
-  },
+  // barcode: {
+  //   required: helpers.withMessage('هذا الحقل مطلوب', required),
+  // },
 
   grade: {
     required: helpers.withMessage('هذا الحقل مطلوب', required),

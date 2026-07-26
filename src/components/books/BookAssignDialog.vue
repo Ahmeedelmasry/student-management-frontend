@@ -1,12 +1,12 @@
 <template>
-  <v-dialog @after-leave="closeModal" max-width="1200">
+  <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 font-weight-bold">
         تسليم ( {{ item.name }} ) للطلاب
       </v-card-title>
       <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
         <v-row class="mb-4 align-center flex-grow-0">
-          <v-col cols="12" md="6" class="pt-0">
+          <v-col class="pt-0">
             <v-text-field
               :id="Math.random()"
               v-model="options.searchWord"
@@ -20,7 +20,7 @@
               :disabled="!item?._id"
             />
           </v-col>
-          <v-col cols="12" md="6" class="pt-0">
+          <v-col class="pt-0">
             <v-autocomplete
               :id="Math.random()"
               v-model="options.groupIds"
@@ -34,6 +34,18 @@
               multiple
               chips
               clearable
+              :disabled="!item?._id"
+            />
+          </v-col>
+          <v-col class="pt-0">
+            <v-select
+              :id="Math.random()"
+              v-model="options.paymentStatus"
+              :items="paymentStatuses"
+              label="حالة الدفع"
+              variant="outlined"
+              density="compact"
+              hide-details
               :disabled="!item?._id"
             />
           </v-col>
@@ -53,6 +65,22 @@
           >
             <template #item.registrationDate="{ item }">
               {{ moment(item.registrationDate).format('YYYY/MM/DD') }}
+            </template>
+            <template #item.paymentDate="{ item }">
+              <span v-if="item.paymentDate">{{
+                moment(item.paymentDate).format('YYYY/MM/DD')
+              }}</span>
+              <span v-else>...</span>
+            </template>
+
+            <template #item.isPaid="{ item }">
+              <v-chip
+                label
+                density="compact"
+                :color="item.isPaid ? 'success' : 'red'"
+                class="font-weight-bold"
+                >{{ (item.isPaid && 'نعم') || 'لا' }}</v-chip
+              >
             </template>
             <template #bottom></template>
           </v-data-table-server>
@@ -106,10 +134,28 @@ const headers = [
   { title: 'رقم الهاتف', key: 'studentPhone', sortable: false },
   { title: 'رقم ولي الامر', key: 'parentPhone', sortable: false },
   { title: 'تاريخ التسجيل', key: 'registrationDate', sortable: false },
+  { title: 'تم الدفع', key: 'isPaid', sortable: false },
+  { title: 'تاريخ الدفع', key: 'paymentDate', sortable: false },
 ]
+
+const paymentStatuses = ref([
+  {
+    title: 'الكل',
+    value: null,
+  },
+  {
+    title: 'تم الدفع',
+    value: 'paid',
+  },
+  {
+    title: 'لم يتم الدفع',
+    value: 'unpaid',
+  },
+])
 
 const options = ref({
   groupIds: [],
+  paymentStatus: null,
   searchWord: '',
 })
 

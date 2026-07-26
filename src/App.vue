@@ -26,9 +26,14 @@
     </v-snackbar>
 
     <v-app-bar color="primary" elevation="2" v-if="$route.name != 'Login'">
-      <v-app-bar-title class="font-weight-bold text-right" style="direction: rtl">
+      <v-app-bar-title class="font-weight-bold text-right text-auto" style="direction: rtl">
         لوحة تحكم المعلم الذكية 🎓
       </v-app-bar-title>
+      <v-btn icon @click="themeStore.toggleTheme()">
+        <v-icon>
+          {{ themeStore.theme === 'dark' ? 'mdi-weather-sunny' : 'mdi-weather-night' }}
+        </v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -137,7 +142,7 @@
 
     <DeleteWarning />
 
-    <v-main class="bg-grey-lighten-4">
+    <v-main class="text-auto">
       <router-view />
     </v-main>
   </v-app>
@@ -150,15 +155,22 @@ import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DeleteWarning from '@/components/Delete/index.vue'
+import { useTheme } from 'vuetify'
+import { useThemeStore } from '@/stores/theme/theme'
 
 // Init Stores
 const authModule = useAuthStore()
 const mainModule = useMainStore()
 
+const themeStore = useThemeStore()
+
 // Init Router
 const router = useRouter()
 
 // Data
+const theme = useTheme()
+theme.global.name.value = themeStore.theme
+
 const { loggerData, token } = storeToRefs(authModule)
 const { callMsg, callSuccess, callColor } = storeToRefs(mainModule)
 const snackbar = ref(false)
@@ -184,6 +196,13 @@ watch(
     if (!newVal) {
       mainModule.resetSnackbar()
     }
+  },
+)
+
+watch(
+  () => themeStore.theme,
+  (value) => {
+    theme.global.name.value = value
   },
 )
 

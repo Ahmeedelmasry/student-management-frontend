@@ -24,6 +24,12 @@ class ModuleService extends ApiHelper {
     })
   }
 
+  async getStudentPaymentsDetails(params) {
+    return await httpClient.get(`${this.url}/payments/details`, {
+      params,
+    })
+  }
+
   async getExamsReport(examId, params) {
     return await httpClient.get(`${this.url}/exams/${examId}`, {
       params,

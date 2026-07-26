@@ -2,59 +2,65 @@
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="12" md="6" class="py-0">
-        <h2 class="text-h4 font-weight-bold text-grey-darken-3">
-          <v-icon color="primary" class="me-2">mdi-account-multiple-plus</v-icon>
+        <h2 class="text-h4 font-weight-bold text-auto">
+          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
           ادارة الطلاب
         </h2>
       </v-col>
       <v-col cols="12" md="6" class="py-0 text-end">
         <v-btn color="primary" @click="editDialog = true"> تسجيل طالب جديد </v-btn>
       </v-col>
-      <v-col cols="12" md="3" class="pt-0">
-        <v-text-field
-          :id="Math.random()"
-          v-model="options.searchWord"
-          label="بحث"
-          variant="outlined"
-          density="compact"
-          prepend-inner-icon="mdi-magnify"
-          hide-details
-          clearable
-        />
-      </v-col>
-
-      <v-col cols="12" md="3" class="pt-0">
-        <v-autocomplete
-          :id="Math.random()"
-          v-model="options.grade"
-          :items="grades"
-          item-title="name"
-          item-value="_id"
-          label="الصف"
-          variant="outlined"
-          density="compact"
-          hide-details
-          clearable
-          @update:model-value="options.group = null"
-        />
-      </v-col>
-
-      <v-col cols="12" md="3" class="pt-0">
-        <v-autocomplete
-          :id="Math.random()"
-          v-model="options.group"
-          :items="relatedGroups"
-          item-title="name"
-          item-value="_id"
-          label="المجموعة"
-          variant="outlined"
-          density="compact"
-          hide-details
-          clearable
-          :disabled="!options.grade"
-        />
-      </v-col>
     </v-row>
+    <v-card class="mb-4">
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="3" class="pt-0">
+            <v-text-field
+              :id="Math.random()"
+              v-model="options.searchWord"
+              label="بحث"
+              variant="outlined"
+              density="compact"
+              prepend-inner-icon="mdi-magnify"
+              hide-details
+              clearable
+            />
+          </v-col>
+
+          <v-col cols="12" md="3" class="pt-0">
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="options.grade"
+              :items="grades"
+              item-title="name"
+              item-value="_id"
+              label="الصف"
+              variant="outlined"
+              density="compact"
+              hide-details
+              clearable
+              @update:model-value="options.group = null"
+            />
+          </v-col>
+
+          <v-col cols="12" md="3" class="pt-0">
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="options.group"
+              :items="relatedGroups"
+              item-title="name"
+              item-value="_id"
+              label="المجموعة"
+              variant="outlined"
+              density="compact"
+              hide-details
+              clearable
+              :disabled="!options.grade"
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
 
     <!-- items Table -->
     <v-card class="flex-grow-1">
@@ -74,6 +80,28 @@
 
         <template #item.registrationDate="{ item }">
           {{ moment(item.registrationDate).format('YYYY/MM/DD') }}
+        </template>
+
+        <template #item.barcode="{ item, index }">
+          <div v-if="!item.editMode" class="d-flex justify-space-between align-center">
+            <span>{{ item.barcode }}</span>
+            <v-icon size="13" color="info" @click="editStudentBarcode(item, index)"
+              >mdi-pencil</v-icon
+            >
+          </div>
+          <div v-else class="d-flex justify-space-between align-center ga-2">
+            <v-text-field
+              :id="`student-barcode-${index}`"
+              v-model="item.barcode"
+              variant="outlined"
+              density="compact"
+              hide-details
+            />
+            <v-icon size="13" color="error" @click="item.editMode = !item.editMode"
+              >mdi-close</v-icon
+            >
+            <v-icon size="13" color="primary" @click="updateItem(item)">mdi-content-save</v-icon>
+          </div>
         </template>
 
         <template #item.actions="{ item }">
@@ -154,6 +182,10 @@ const headers = [
     key: 'group.name',
   },
   {
+    title: 'ملاحظات',
+    key: 'notes',
+  },
+  {
     title: 'تاريخ التسجيل',
     key: 'registrationDate',
   },
@@ -208,6 +240,34 @@ watch(
 )
 
 // Methods
+const updateItem = async (item) => {
+  const body = {
+    ...item,
+    registrationDate: new Date(item.registrationDate).setHours(23, 59, 0),
+  }
+
+  await studentService
+    .update(body, body._id)
+    .then(({ data }) => {
+      useMainStore().callResponse(true, data.message, 1)
+      listItems()
+      item.editMode = false
+    })
+    .catch((err) => {
+      useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
+    })
+}
+
+const editStudentBarcode = (item, index) => {
+  item.editMode = !item.editMode
+  setTimeout(() => {
+    const field = document.querySelector(`#student-barcode-${index}`)
+    if (field) {
+      field.focus()
+    }
+  }, 100)
+}
+
 const listItems = async () => {
   loading.value = true
 

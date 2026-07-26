@@ -2,8 +2,8 @@
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
-        <h2 class="text-h4 font-weight-bold text-grey-darken-3">
-          <v-icon color="primary" class="me-2">mdi-account-multiple-plus</v-icon>
+        <h2 class="text-h4 font-weight-bold text-auto">
+          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
           ادارة المحاضرات
         </h2>
       </v-col>
@@ -186,6 +186,10 @@ const headers = [
   {
     title: 'تاريخ الإنشاء',
     key: 'createdAt',
+  },
+  {
+    title: 'ملاحظات',
+    key: 'notes',
   },
   {
     title: 'العمليات',

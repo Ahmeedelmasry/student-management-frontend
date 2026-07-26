@@ -7,7 +7,7 @@
 
       <v-card-text>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12">
             <v-autocomplete
               :id="Math.random()"
               v-model="item.student"
@@ -90,17 +90,6 @@
               v-model="item.paymentMethod"
               :items="paymentMethods"
               label="طريقة الدفع"
-              variant="outlined"
-              density="compact"
-            />
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-select
-              :id="Math.random()"
-              v-model="item.status"
-              :items="statuses"
-              label="الحالة"
               variant="outlined"
               density="compact"
             />
@@ -220,21 +209,6 @@ const paymentMethods = [
   {
     title: 'تحويل بنكي',
     value: 'Bank',
-  },
-]
-
-const statuses = [
-  {
-    title: 'مدفوع',
-    value: 'Paid',
-  },
-  {
-    title: 'ملغي',
-    value: 'Cancelled',
-  },
-  {
-    title: 'مرتجع',
-    value: 'Refunded',
   },
 ]
 

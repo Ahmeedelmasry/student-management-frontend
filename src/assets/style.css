@@ -13,7 +13,6 @@ body {
 }
 
 .v-table th {
-  background-color: rgb(234, 234, 234);
   font-weight: 700;
   border-left: 1px solid rgb(213, 213, 213);
   border-top: 1px solid rgb(213, 213, 213);
@@ -27,3 +26,7 @@ body {
 .dp--instance-calendar {
   width: 350px !important;
 }
+
+.v-theme--dark .v-overlay__scrim {
+  opacity: 0.7 !important;
+} 

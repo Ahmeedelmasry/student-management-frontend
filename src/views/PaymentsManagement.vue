@@ -2,8 +2,8 @@
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
-        <h2 class="text-h4 font-weight-bold text-grey-darken-3">
-          <v-icon color="primary" class="me-2">mdi-account-multiple-plus</v-icon>
+        <h2 class="text-h4 font-weight-bold text-auto">
+          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
           ادارة الماليات
         </h2>
       </v-col>
@@ -69,7 +69,25 @@
             label="نوع الدفع"
             variant="outlined"
             density="compact"
-            @update:model-value="((options.year = null), (options.month = null))"
+            @update:model-value="
+              ((options.year = null), (options.month = null), (options.book = null))
+            "
+          />
+        </v-col>
+
+        <v-col cols="12" md="3">
+          <v-autocomplete
+            v-if="options.type == 'Book'"
+            hide-details
+            :id="Math.random()"
+            v-model="options.book"
+            :items="books"
+            label="المذكرة"
+            item-title="name"
+            item-value="_id"
+            variant="outlined"
+            density="compact"
+            clearable
           />
         </v-col>
 
@@ -206,6 +224,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth/auth'
 import CreateItem from '@/components/payments/CreateItem.vue'
 import gradeService from '@/services/grade.js'
+import bookService from '@/services/book.js'
 
 const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())
@@ -219,6 +238,7 @@ const options = ref({
 
   grade: null,
   group: null,
+  book: null,
 
   type: 'Subscription',
   paymentMethod: null,
@@ -234,6 +254,7 @@ const options = ref({
 })
 
 const grades = ref([])
+const books = ref([])
 
 const paymentTypes = [
   {
@@ -320,6 +341,10 @@ const headers = [
     key: 'paymentMethod',
   },
   {
+    title: 'ملاحظات',
+    key: 'notes',
+  },
+  {
     title: 'تاريخ الدفع',
     key: 'paymentDate',
   },
@@ -387,6 +412,15 @@ const listGrades = async () => {
     .catch((err) => console.log(err))
 }
 
+const listBooks = async () => {
+  await bookService
+    .list({ limit: 10000 })
+    .then(({ data }) => {
+      books.value = data.docs
+    })
+    .catch((err) => console.log(err))
+}
+
 const relatedGroups = computed(() => {
   const gradeId = options.value.grade
   if (gradeId) {
@@ -398,5 +432,6 @@ const relatedGroups = computed(() => {
 onMounted(async () => {
   listItems()
   listGrades()
+  listBooks()
 })
 </script>
