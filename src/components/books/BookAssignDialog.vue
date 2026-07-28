@@ -89,20 +89,29 @@
       <v-card-actions>
         <v-spacer />
 
-        <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn>
+        <!-- <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn> -->
+
         <v-btn
-          color="blue"
+          :loading="saveLoading"
+          :disabled="!selectedRows.length"
+          @click="payOnly"
+          class="bg-blue text-white"
+        >
+          دفع فقط
+        </v-btn>
+        <v-btn
           :loading="saveLoading"
           :disabled="!selectedRows.length"
           @click="saveData"
+          class="bg-blue text-white"
         >
           تسليم فقط
         </v-btn>
         <v-btn
-          color="primary"
           :loading="saveLoading"
           :disabled="!selectedRows.length"
           @click="saveData(true)"
+          class="bg-primary text-white"
         >
           دفع وتسليم
         </v-btn>
@@ -116,6 +125,7 @@ import { computed, ref, watch } from 'vue'
 import { useMainStore } from '@/stores'
 import groupService from '@/services/group'
 import bookAssignService from '@/services/bookAssign'
+import paymentService from '@/services/payment'
 import moment from 'moment'
 
 const items = ref([])
@@ -240,5 +250,41 @@ const saveData = async (pay = false) => {
       useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
     })
     .finally(() => (saveLoading.value = false))
+}
+
+const payOnly = async () => {
+  const bodyItems = []
+  selectedRows.value.forEach((studentId) => {
+    const student = items.value.find((e) => e._id == studentId)
+    if (student) {
+      const paymentBody = {
+        student: student._id,
+        group: student.group._id,
+        grade: student.grade._id,
+        type: 'Book',
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+        book: item._id,
+        paymentMethod: 'Cash',
+        amount: item.price,
+      }
+      bodyItems.push(paymentBody)
+    }
+  })
+
+  if (bodyItems.length) {
+    await paymentService
+      .bulkBookPay({
+        rows: bodyItems,
+      })
+      .then(({ data }) => {
+        useMainStore().callResponse(true, data.message, 1)
+        closeModal()
+      })
+      .catch((err) => {
+        useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
+      })
+      .finally(() => (saveLoading.value = false))
+  }
 }
 </script>

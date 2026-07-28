@@ -90,14 +90,22 @@
       <v-card-actions>
         <v-spacer />
 
-        <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn>
+        <!-- <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn> -->
         <v-btn
-          color="primary"
           :loading="saveLoading"
           :disabled="!selectedRows.length"
           @click="saveData"
+          class="bg-blue text-white"
         >
-          تاكيد الغاء التسليم
+          الغاء التسليم فقط
+        </v-btn>
+        <v-btn
+          :loading="saveLoading"
+          :disabled="!selectedRows.length"
+          @click="saveData(true)"
+          class="bg-primary text-white"
+        >
+          الغاء التسليم والغاء الدفع
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -220,9 +228,9 @@ const listAllGroups = async () => {
     })
 }
 
-const saveData = async () => {
+const saveData = async (cancelPayment = false) => {
   await bookAssignService
-    .bulkUnassignStudents(item._id, selectedRows.value)
+    .bulkUnassignStudents(item._id, selectedRows.value, { cancelPayment })
     .then(({ data }) => {
       useMainStore().callResponse(true, data.message, 1)
       closeModal()
