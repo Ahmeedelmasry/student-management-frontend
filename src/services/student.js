@@ -6,8 +6,14 @@ class ModuleService extends ApiHelper {
     super('/students')
   }
 
-  async scanAttendance(barcode) {
-    return await httpClient.post(`${this.url}/scan/${barcode}`)
+  async scanAttendance(barcode, params) {
+    return await httpClient.post(
+      `${this.url}/scan/${barcode}`,
+      {},
+      {
+        params,
+      },
+    )
   }
 }
 

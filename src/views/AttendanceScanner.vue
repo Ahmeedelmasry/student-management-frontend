@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height justify-center" style="direction: rtl">
+  <v-container class="scanner-container justify-center" style="direction: rtl" fluid>
     <v-card width="100%" class="pa-6 text-center" elevation="4" rounded="lg">
       <v-icon size="64" color="primary" class="mb-4">mdi-barcode-scan</v-icon>
       <v-card-title class="text-h5 font-weight-bold justify-center">تسجيل حضور الطالب</v-card-title>
@@ -11,7 +11,7 @@
         :id="Math.random()"
         ref="barcodeInput"
         v-model="barcodeText"
-        @keyup.enter="handleBarcodeScan"
+        @keyup.enter="handleBarcodeScan($event, false)"
         label="اضغط هنا وجرب اسحب بالباركود..."
         variant="outlined"
         prepend-inner-icon="mdi-qrcode"
@@ -38,7 +38,7 @@
           <template #title>
             <div class="text-h6 font-weight-bold">{{ scanResult?.message }}</div>
           </template>
-          <v-table class="mt-10 attendence-table" v-if="scanResult?.status == 'success'">
+          <v-table class="mt-10 attendence-table" v-if="scanResult?.status != 'error'">
             <thead>
               <tr>
                 <th>الاسم</th>
@@ -46,6 +46,7 @@
                 <th>المجموعة</th>
                 <th>رقم الهاتف</th>
                 <th>هاتف ولي الامر</th>
+                <th>غياب اخر حصتين</th>
                 <th>مذكرات غير مدفوعة</th>
                 <th>شهور غير مدفوعة</th>
               </tr>
@@ -57,6 +58,23 @@
                 <td>{{ scanResult?.student?.groupName }}</td>
                 <td>{{ scanResult?.student?.studentPhone }}</td>
                 <td>{{ scanResult?.student?.parentPhone }}</td>
+                <td>
+                  <div class="d-flex flex-column ga-2 w-100 py-1">
+                    <v-chip
+                      label
+                      density="compact"
+                      v-for="(session, i) in scanResult?.student?.lastSessionsAbsence || []"
+                      :key="session.id"
+                      color="red"
+                      class="font-weight-bold"
+                    >
+                      <span>
+                        {{ days[moment(session.sessionDate).format('dddd')] }}
+                        {{ moment(session.sessionDate).format('YYYY/MM/DD') }}
+                      </span>
+                    </v-chip>
+                  </div>
+                </td>
                 <td style="width: 200px">
                   <div class="d-flex flex-wrap ga-2 py-1">
                     <div
@@ -114,6 +132,13 @@
               </tr>
             </tbody>
           </v-table>
+          <v-btn
+            color="primary"
+            class="mt-5"
+            @click.prevent="handleBarcodeScan({}, true)"
+            v-if="scanResult?.status == 'warning'"
+            >تسجيل الحضور</v-btn
+          >
         </v-alert>
       </v-expand-transition>
     </v-card>
@@ -159,6 +184,8 @@ import { ref, onMounted } from 'vue'
 import studentService from '@/services/student'
 import paymentService from '@/services/payment'
 import { useMainStore } from '@/stores/index.js'
+import moment from 'moment'
+import 'moment/locale/ar'
 
 const barcodeText = ref('')
 const confimationMsg = ref('')
@@ -168,6 +195,15 @@ const payLoading = ref(false)
 const confirmationDialog = ref(false)
 const scanResult = ref(null)
 const itemToPay = ref(null)
+const days = {
+  Saturday: 'السبت',
+  Sunday: 'الاحد',
+  Monday: 'الاثنين',
+  Tuesday: 'الثلاثاء',
+  Wednesday: 'الاربعاء',
+  Thursday: 'الخميس',
+  Friday: 'الجمعة',
+}
 
 // دالة التركيز على حقل الإدخال
 const focusInput = () => {
@@ -177,22 +213,28 @@ const focusInput = () => {
 }
 
 // معالجة مسح الباركود
-const handleBarcodeScan = async () => {
+const handleBarcodeScan = async (event, attendAnyway = false) => {
   const code = barcodeText.value.trim()
   if (!code) return
 
   try {
     // الاتصال بالـ Backend باستخدام السيرفس
-    const response = await studentService.scanAttendance(code)
+    const response = await studentService.scanAttendance(code, { attendAnyway })
     const student = response.data
 
     // عرض بيانات الطالب بنجاح
     scanResult.value = {
-      status: 'success',
-      message: 'تم تسجيل الحضور بنجاح',
       ...student,
     }
+    if (student.showErr) {
+      scanResult.value.status = 'warning'
+    } else {
+      scanResult.value.status = 'success'
+      // تنظيف الحقل والعودة للتركيز عليه
+      barcodeText.value = ''
+    }
   } catch (error) {
+    console.log(error)
     // معالجة الخطأ إذا لم يتم العثور على الطالب أو خطأ في السيرفر
     scanResult.value = {
       status: 'error',
@@ -200,14 +242,10 @@ const handleBarcodeScan = async () => {
     }
     useMainStorere().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
   }
-
-  // تنظيف الحقل والعودة للتركيز عليه
-  barcodeText.value = ''
   focusInput()
 }
 
 const openConfirmDialog = (item, type, index) => {
-  console.log(item)
   itemToPay.value = {
     ...item,
     index,
@@ -254,9 +292,15 @@ onMounted(() => {
 .attendence-table {
   th {
     font-weight: 900;
+    white-space: nowrap;
   }
   td {
     font-weight: 700;
+    font-size: 12px !important;
+    white-space: nowrap;
+    * {
+      font-size: 12px !important;
+    }
   }
 }
 </style>
