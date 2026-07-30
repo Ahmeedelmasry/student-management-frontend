@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon  class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-school</v-icon>
           ادارة الصفوف الدراسية
         </h2>
       </v-col>
@@ -23,6 +23,7 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
       >
         <template #item.isAdmin="{ item }">
           <v-chip :color="item.isAdmin ? 'primary' : 'grey'" size="small">
@@ -79,6 +80,7 @@ const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())
 
 const items = ref([])
+const perPage = ref([10, 50, 100, 1000, 2000])
 
 const loading = ref(false)
 

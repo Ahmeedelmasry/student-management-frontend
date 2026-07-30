@@ -7,7 +7,7 @@
 
       <v-card-text>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12">
             <v-text-field
               :id="Math.random()"
               v-model="item.name"
@@ -15,16 +15,6 @@
               variant="outlined"
               density="compact"
               :error-messages="v$.name.$errors.map((e) => e.$message)"
-            />
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-select
-              v-model="item.status"
-              :items="statuses"
-              label="الحالة"
-              variant="outlined"
-              density="compact"
             />
           </v-col>
 

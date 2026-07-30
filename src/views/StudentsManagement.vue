@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="12" md="6" class="py-0">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-account-multiple</v-icon>
           ادارة الطلاب
         </h2>
       </v-col>
@@ -73,6 +73,7 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
       >
         <template #item.createdAt="{ item }">
           {{ moment(item.createdAt).format('YYYY/MM/DD') }}
@@ -155,6 +156,7 @@ const grades = ref([])
 const loading = ref(false)
 
 const editDialog = ref(false)
+const perPage = ref([10, 50, 100, 1000, 2000])
 const toDelete = ref(null)
 const headers = [
   {

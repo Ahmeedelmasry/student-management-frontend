@@ -194,6 +194,7 @@ const barcodeInput = ref(null)
 const payLoading = ref(false)
 const confirmationDialog = ref(false)
 const scanResult = ref(null)
+const perPage = ref([10, 50, 100, 1000, 2000])
 const itemToPay = ref(null)
 const days = {
   Saturday: 'السبت',

@@ -29,4 +29,8 @@ body {
 
 .v-theme--dark .v-overlay__scrim {
   opacity: 0.7 !important;
-} 
+}
+
+.v-data-table-footer__items-per-page .v-input {
+  width: 140px;
+}

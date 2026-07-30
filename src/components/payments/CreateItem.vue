@@ -7,7 +7,7 @@
 
       <v-card-text>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" md="6">
             <v-autocomplete
               :id="Math.random()"
               v-model="item.student"
@@ -94,7 +94,7 @@
               density="compact"
             />
           </v-col>
-
+<!-- 
           <v-col cols="12" md="6">
             <v-date-input
               :id="Math.random()"
@@ -103,7 +103,7 @@
               variant="outlined"
               density="compact"
             />
-          </v-col>
+          </v-col> -->
 
           <v-col cols="12">
             <v-textarea

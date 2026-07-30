@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon  class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-account-group</v-icon>
           ادارة المجموعات
         </h2>
       </v-col>
@@ -57,6 +57,7 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
       >
         <template #item.isAdmin="{ item }">
           <v-chip :color="item.isAdmin ? 'primary' : 'grey'" size="small">
@@ -109,6 +110,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth/auth'
 import CreateItemDialog from '@/components/groups/CreateItem.vue'
 import gradeService from '@/services/grade'
+const perPage = ref([10, 50, 100, 1000, 2000])
 
 const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())

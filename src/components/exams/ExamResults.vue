@@ -70,7 +70,13 @@
             <template #item.score="{ item }">
               <div v-if="!item.editMode" class="w-100 d-flex align-center justify-space-between">
                 <span>{{ item.score }}</span>
-                <v-icon color="primary" size="13" @click="item.editMode = true">mdi-pencil</v-icon>
+                <v-icon
+                  color="primary"
+                  size="13"
+                  v-if="!item.isAbsent"
+                  @click="item.editMode = true"
+                  >mdi-pencil</v-icon
+                >
               </div>
               <div v-else class="d-flex align-center ga-4">
                 <v-text-field

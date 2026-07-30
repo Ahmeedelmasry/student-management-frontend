@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-cash-multiple</v-icon>
           ادارة الماليات
         </h2>
       </v-col>
@@ -15,7 +15,7 @@
     <!-- items Table -->
     <v-card class="mb-4 pa-4">
       <v-row>
-        <v-col cols="12" md="3">
+        <v-col>
           <v-text-field
             hide-details
             :id="Math.random()"
@@ -28,7 +28,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="2">
+        <v-col>
           <v-autocomplete
             hide-details
             :id="Math.random()"
@@ -44,7 +44,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="2">
+        <v-col>
           <v-autocomplete
             hide-details
             :id="Math.random()"
@@ -60,7 +60,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="2">
+        <v-col>
           <v-select
             hide-details
             :id="Math.random()"
@@ -75,9 +75,8 @@
           />
         </v-col>
 
-        <v-col cols="12" md="3">
+        <v-col v-if="options.type == 'Book'">
           <v-autocomplete
-            v-if="options.type == 'Book'"
             hide-details
             :id="Math.random()"
             v-model="options.book"
@@ -91,7 +90,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="3">
+        <v-col>
           <v-autocomplete
             hide-details
             :id="Math.random()"
@@ -103,8 +102,10 @@
             clearable
           />
         </v-col>
+      </v-row>
 
-        <v-col cols="12" md="2" v-if="options.type == 'Subscription'">
+      <v-row>
+        <v-col v-if="options.type == 'Subscription'" cols="2">
           <v-autocomplete
             hide-details
             :id="Math.random()"
@@ -116,8 +117,7 @@
             clearable
           />
         </v-col>
-
-        <v-col cols="12" md="2" v-if="options.type == 'Subscription'">
+        <v-col v-if="options.type == 'Subscription'" cols="2">
           <v-text-field
             hide-details
             :id="Math.random()"
@@ -129,7 +129,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="3">
+        <v-col cols="2">
           <v-date-input
             :id="Math.random()"
             v-model="options.fromDate"
@@ -140,7 +140,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="3">
+        <v-col cols="2">
           <v-date-input
             :id="Math.random()"
             v-model="options.toDate"
@@ -163,6 +163,7 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
       >
         <template #item.createdAt="{ item }">
           {{ moment(item.createdAt).format('YYYY/MM/DD') }}
@@ -170,9 +171,6 @@
 
         <template #item.book="{ item }">
           {{ item.book?.name || '...' }}
-        </template>
-        <template #item.paymentDate="{ item }">
-          {{ moment(item.paymentDate).format('YYYY/MM/DD') }}
         </template>
 
         <template #item.type="{ item }">
@@ -205,6 +203,12 @@
         </template>
       </v-data-table-server>
     </v-card>
+
+    <v-card class="d-flex align-center px-5 py-5" style="font-size: 22px">
+      <span class="font-weight-bold">الاجمالي: &nbsp; &nbsp;</span>
+      <span class="font-weight-bold">{{ totalAmount }} جــ</span>
+    </v-card>
+
     <CreateItem
       v-model="editDialog"
       @leave="((editDialog = false), (toUpdate = {}))"
@@ -230,8 +234,10 @@ const { regetData } = storeToRefs(useMainStore())
 const { loggerData } = storeToRefs(useAuthStore())
 
 const items = ref([])
+const perPage = ref([10, 50, 100, 1000, 2000])
 
 const loading = ref(false)
+const totalAmount = ref(0)
 
 const options = ref({
   searchWord: '',
@@ -345,10 +351,6 @@ const headers = [
     key: 'notes',
   },
   {
-    title: 'تاريخ الدفع',
-    key: 'paymentDate',
-  },
-  {
     title: 'تاريخ الانشاء',
     key: 'createdAt',
   },
@@ -385,6 +387,7 @@ const listItems = async () => {
     .then(({ data }) => {
       items.value = data.docs
       totalItems.value = data.totalDocs
+      totalAmount.value = data.totalAmount
     })
     .catch((err) => console.log(err))
 }

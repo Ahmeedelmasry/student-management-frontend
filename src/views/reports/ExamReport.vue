@@ -3,7 +3,7 @@
     <v-row class="align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon class="text-auto me-2">mdi-file-chart</v-icon>
           تقرير الامتحانات
         </h2>
       </v-col>
@@ -250,6 +250,7 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
       >
         <template #item.percentage="{ item }">
           <v-chip label :color="item.examStatus.color" class="font-weight-bold">

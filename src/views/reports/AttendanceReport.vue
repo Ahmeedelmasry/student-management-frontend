@@ -3,7 +3,7 @@
     <v-row class="mb-4 align-center flex-grow-0">
       <v-col cols="6">
         <h2 class="text-h4 font-weight-bold text-auto">
-          <v-icon  class="text-auto me-2">mdi-account-multiple-plus</v-icon>
+          <v-icon  class="text-auto me-2">mdi-file-chart</v-icon>
           تقرير حضور الطلاب
         </h2>
       </v-col>
@@ -128,6 +128,8 @@
         v-model:page="options.page"
         v-model:items-per-page="options.limit"
         :items-length="totalItems"
+        :items-per-page-options="perPage"
+
       >
         <template #item.lastAbsentDate="{ item }">
           {{ item.lastAbsentDate ? moment(item.lastAbsentDate).format('YYYY/MM/DD') : '...' }}
