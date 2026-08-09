@@ -7,20 +7,21 @@
         >يرجى تمرير باركود الطالب أمام السكانر او كتابته يدويا</v-card-subtitle
       >
 
-      <v-text-field
-        :id="Math.random()"
-        ref="barcodeInput"
-        v-model="barcodeText"
-        @keyup.enter="handleBarcodeScan($event, false)"
-        label="اضغط هنا وجرب اسحب بالباركود..."
-        variant="outlined"
-        prepend-inner-icon="mdi-qrcode"
-        color="primary"
-        auto-focus
-        clearable
-        hide-details
-        class="mb-4"
-      ></v-text-field>
+      <v-form @submit.prevent="handleBarcodeScan(false)">
+        <v-text-field
+          ref="barcodeInput"
+          v-model="barcodeText"
+          label="اضغط هنا وجرب اسحب بالباركود..."
+          variant="outlined"
+          prepend-inner-icon="mdi-qrcode"
+          color="primary"
+          auto-focus
+          clearable
+          hide-details
+          class="mb-4"
+        ></v-text-field>
+        <input type="submit" class="d-none" />
+      </v-form>
 
       <v-btn prepend-icon="mdi-target" color="secondary" variant="text" @click="focusInput">
         إعادة تركيز السكنر
@@ -135,7 +136,7 @@
           <v-btn
             color="primary"
             class="mt-5"
-            @click.prevent="handleBarcodeScan({}, true)"
+            @click.prevent="handleBarcodeScan(true)"
             v-if="scanResult?.status == 'warning'"
             >تسجيل الحضور</v-btn
           >
@@ -214,7 +215,7 @@ const focusInput = () => {
 }
 
 // معالجة مسح الباركود
-const handleBarcodeScan = async (event, attendAnyway = false) => {
+const handleBarcodeScan = async (attendAnyway = false) => {
   const code = barcodeText.value.trim()
   if (!code) return
 
@@ -241,9 +242,10 @@ const handleBarcodeScan = async (event, attendAnyway = false) => {
       status: 'error',
       message: '',
     }
-    useMainStorere().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
+    useMainStore().callResponse(true, error.response?.data?.message || 'حدث خطأ ما', 2)
   }
   focusInput()
+  barcodeText.value = ''
 }
 
 const openConfirmDialog = (item, type, index) => {

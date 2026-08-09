@@ -91,13 +91,18 @@
             >
           </div>
           <div v-else class="d-flex justify-space-between align-center ga-2">
-            <v-text-field
-              :id="`student-barcode-${index}`"
-              v-model="item.barcode"
-              variant="outlined"
-              density="compact"
-              hide-details
-            />
+            <v-form @submit.prevent="updateItem(item)">
+              <v-text-field
+                :id="`student-barcode-${index}`"
+                v-model="item.barcode"
+                variant="outlined"
+                density="compact"
+                hide-details
+                @click="updateItem(item)"
+                style="min-width: 150px"
+              />
+            </v-form>
+
             <v-icon size="13" color="error" @click="item.editMode = !item.editMode"
               >mdi-close</v-icon
             >
