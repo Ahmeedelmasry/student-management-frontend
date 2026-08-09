@@ -152,7 +152,7 @@
 import { useAuthStore } from '@/stores/auth/auth'
 import { useMainStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DeleteWarning from '@/components/Delete/index.vue'
 import { useTheme } from 'vuetify'
@@ -218,7 +218,34 @@ const logout = () => {
   }, 300)
 }
 
+const preventDevToolsShortcut = (event) => {
+  // F12
+  if (event.key === 'F12') {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    return
+  }
+
+  // Ctrl + Shift + I / J
+  if (event.ctrlKey && event.shiftKey && ['I', 'J'].includes(event.key.toUpperCase())) {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    return
+  }
+
+  // Ctrl + Shift + C
+  if (event.ctrlKey && event.shiftKey && event.key.toUpperCase() === 'C') {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+  }
+}
+
 onMounted(() => {
   theme.global.name.value = themeStore.theme
+  window.addEventListener('keydown', preventDevToolsShortcut, true)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', preventDevToolsShortcut, true)
 })
 </script>
