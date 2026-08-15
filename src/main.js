@@ -14,6 +14,7 @@ import { createPinia } from 'pinia'
 import VueCookies from 'vue-cookies'
 import '@vuepic/vue-datepicker/dist/main.css'
 import VueApexCharts from 'vue3-apexcharts'
+import print from "vue3-print-nb";
 
 window.axios = axiosClient
 window.$cookie = VueCookies
@@ -75,4 +76,5 @@ app.use(router) // تفعيل الراوتر
 app.use(vuetify)
 app.use(pinia)
 app.use(VueApexCharts)
+app.use(print)
 app.mount('#app')

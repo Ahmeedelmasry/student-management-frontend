@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write --experimental-cli src/"
@@ -28,6 +28,7 @@
     "vue-cookies": "^1.8.6",
     "vue-router": "^5.1.0",
     "vue3-apexcharts": "^1.11.1",
+    "vue3-print-nb": "^0.1.4",
     "vuetify": "^4.1.2"
   },
   "devDependencies": {

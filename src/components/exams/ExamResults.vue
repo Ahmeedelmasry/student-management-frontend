@@ -2,7 +2,8 @@
   <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 font-weight-bold">
-        عرض نتائج الطلاب لامتحان: ( {{ selectedExam.name }} )
+        <span> عرض نتائج الطلاب لامتحان: ( {{ selectedExam.name }} ) </span>
+        <v-btn icon="mdi-printer" size="small" v-print="printObj" class="mr-2"></v-btn>
       </v-card-title>
       <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
         <v-row class="mb-4 align-center flex-grow-0">
@@ -38,7 +39,7 @@
         </v-row>
 
         <!-- items Table -->
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1" id="printable-table">
           <v-data-table-server
             :headers="headers"
             :items="items"
@@ -50,9 +51,23 @@
             style="height: 60vh"
           >
             <template #item.isAbsent="{ item }">
-              <v-chip label class="font-weight-bold" :color="item.isAbsent ? 'red' : 'primary'">
-                {{ item.isAbsent ? 'نعم' : 'لا' }}
-              </v-chip>
+              <div v-if="item.editMode" class="d-flex align-center justify-space-between w-100">
+                <v-switch
+                  v-model="item.isAbsent"
+                  :label="item.isAbsent ? 'نعم' : 'لا'"
+                  color="error"
+                  base-color="primary"
+                  hide-details
+                  @update:model-value="item.score = 0"
+                ></v-switch>
+                <v-icon color="red" size="13" @click="item.editMode = false">mdi-close</v-icon>
+              </div>
+              <div v-else class="w-100 d-flex align-center justify-space-between">
+                <v-chip label class="font-weight-bold" :color="item.isAbsent ? 'red' : 'primary'">
+                  {{ item.isAbsent ? 'نعم' : 'لا' }}
+                </v-chip>
+                <v-icon color="primary" size="13" @click="item.editMode = true">mdi-pencil</v-icon>
+              </div>
             </template>
             <template #item.scorePercentage="{ item }">
               <v-chip
@@ -70,13 +85,7 @@
             <template #item.score="{ item }">
               <div v-if="!item.editMode" class="w-100 d-flex align-center justify-space-between">
                 <span>{{ item.score }}</span>
-                <v-icon
-                  color="primary"
-                  size="13"
-                  v-if="!item.isAbsent"
-                  @click="item.editMode = true"
-                  >mdi-pencil</v-icon
-                >
+                <v-icon color="primary" size="13" @click="item.editMode = true">mdi-pencil</v-icon>
               </div>
               <div v-else class="d-flex align-center ga-4">
                 <v-text-field
@@ -87,6 +96,7 @@
                   density="compact"
                   hide-details
                   max-width="200px"
+                  :disabled="item.isAbsent"
                 />
                 <v-icon color="red" size="13" @click="item.editMode = false">mdi-close</v-icon>
               </div>
@@ -125,6 +135,15 @@ const itemsClone = ref('')
 
 const loading = ref(false)
 const saveLoading = ref(false)
+
+// Print
+const printObj = ref({
+  id: 'printable-table',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const { selectedExam } = defineProps({
   selectedExam: {
@@ -201,8 +220,8 @@ const getPercentage = (score, maxScore) => {
 const getPercentageColor = (score, maxScore) => {
   const percent = getPercentage(score, maxScore)
 
-  if (percent >= 90) return 'success'
-  if (percent >= 75) return 'light-green'
+  if (percent >= 90) return 'primary'
+  if (percent >= 75) return 'success'
   if (percent >= 60) return 'warning'
   if (percent >= 50) return 'orange'
   return 'red'
@@ -220,7 +239,7 @@ const listItems = async () => {
       searchWord: options.value.searchWord,
     })
     .then(({ data }) => {
-      items.value = data.map((e) => ({ ...e, scoreClone: e.score }))
+      items.value = data.map((e) => ({ ...e, scoreClone: e.score, absentClone: e.isAbsent }))
       itemsClone.value = cloneDeep(items.value)
     })
     .finally(() => {
@@ -229,7 +248,9 @@ const listItems = async () => {
 }
 
 const saveResults = async () => {
-  const itemsToUpdate = items.value.filter((e) => e.score != e.scoreClone)
+  const itemsToUpdate = items.value.filter(
+    (e) => e.score != e.scoreClone || e.isAbsent != e.absentClone,
+  )
 
   const body = {
     examId: selectedExam._id,
@@ -258,3 +279,14 @@ const saveResults = async () => {
     .finally(() => (saveLoading.value = false))
 }
 </script>
+
+<style lang="scss">
+@media print {
+  #printable-table {
+    th:last-child,
+    td:last-child {
+      display: table-cell !important;
+    }
+  }
+}
+</style>

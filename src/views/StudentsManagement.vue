@@ -7,7 +7,8 @@
           ادارة الطلاب
         </h2>
       </v-col>
-      <v-col cols="12" md="6" class="py-0 text-end">
+      <v-col cols="6" class="text-end d-flex align-center ga-2 justify-end">
+        <v-btn icon="mdi-printer" size="small" v-print="printObj"></v-btn>
         <v-btn color="primary" @click="editDialog = true"> تسجيل طالب جديد </v-btn>
       </v-col>
     </v-row>
@@ -63,7 +64,13 @@
     </v-card>
 
     <!-- items Table -->
-    <v-card class="flex-grow-1">
+    <v-card class="flex-grow-1" id="printable">
+      <div class="print-title font-weight-bold mb-4 justify-space-between">
+        <div>الطلاب</div>
+        <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
+          {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
+        </div>
+      </div>
       <v-data-table-server
         :headers="headers"
         :items="items"
@@ -157,6 +164,15 @@ const items = ref([])
 const grades = ref([])
 
 const loading = ref(false)
+
+// Print
+const printObj = ref({
+  id: 'printable',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const editDialog = ref(false)
 const perPage = ref([10, 50, 100, 1000, 2000])

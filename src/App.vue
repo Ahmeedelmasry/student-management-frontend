@@ -27,7 +27,7 @@
 
     <v-app-bar color="primary" elevation="2" v-if="$route.name != 'Login'">
       <v-app-bar-title class="font-weight-bold text-right text-auto" style="direction: rtl">
-        مستر هشام عبيد
+        مستر عبدالله هنون
       </v-app-bar-title>
       <v-btn icon @click="themeStore.toggleTheme()">
         <v-icon>
@@ -249,3 +249,44 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', preventDevToolsShortcut, true)
 })
 </script>
+
+<style lang="scss">
+.print-title {
+  display: none;
+}
+@media print {
+  .print-title {
+    display: flex !important;
+  }
+  #printable,
+  #printable-table {
+    margin-left: 10px;
+    margin-right: 10px;
+    direction: rtl;
+    box-shadow: unset;
+  }
+  .v-data-table-footer {
+    display: none !important;
+  }
+  .v-table {
+    border-right: 1px solid rgb(193, 193, 193);
+    th,
+    td {
+      padding: 8px;
+      font-size: 11px;
+      background-color: transparent !important;
+      color: black !important;
+      * {
+        font-size: 11px !important;
+        background-color: transparent !important;
+        color: black !important;
+      }
+    }
+
+    th:last-child,
+    td:last-child {
+      display: none !important;
+    }
+  }
+}
+</style>

@@ -10,6 +10,32 @@
           <v-col cols="12" md="6">
             <v-autocomplete
               :id="Math.random()"
+              v-model="gradeId"
+              :items="grades"
+              item-title="name"
+              item-value="_id"
+              label="الصف"
+              variant="outlined"
+              density="compact"
+              @update:model-value="((item.student = null), (groupId = null))"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="groupId"
+              :items="relatedGroups"
+              item-title="name"
+              item-value="_id"
+              label="المجموعة"
+              variant="outlined"
+              density="compact"
+              @update:model-value="(item.student, listStudents())"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              :id="Math.random()"
               v-model="item.student"
               :items="students"
               item-title="fullName"
@@ -19,7 +45,16 @@
               density="compact"
               :error-messages="v$.student.$errors.map((e) => e.$message)"
               @update:model-value="onStudentSelect"
-            />
+              :disabled="!groupId || !gradeId"
+            >
+              <template #item="{ props, item }">
+                <v-list-item v-bind="props">
+                  <v-list-item-subtitle class="text-black font-weight-bold"
+                    >#{{ item.barcode }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </template>
+            </v-autocomplete>
           </v-col>
 
           <v-col cols="12" md="6">
@@ -94,7 +129,7 @@
               density="compact"
             />
           </v-col>
-<!-- 
+          <!-- 
           <v-col cols="12" md="6">
             <v-date-input
               :id="Math.random()"
@@ -140,6 +175,8 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, requiredIf } from '@vuelidate/validators'
 import paymentService from '@/services/payment.js'
 import studentService from '@/services/student.js'
+import gradeService from '@/services/grade.js'
+import groupService from '@/services/group.js'
 import { useMainStore } from '@/stores'
 import bookService from '@/services/book.js'
 
@@ -180,6 +217,10 @@ const item = ref({
 })
 
 const students = ref([])
+const grades = ref([])
+const groups = ref([])
+const gradeId = ref(null)
+const groupId = ref(null)
 const books = ref([])
 
 const paymentTypes = [
@@ -270,6 +311,11 @@ const rules = computed(() => ({
 }))
 
 const v$ = useVuelidate(rules, item)
+
+const relatedGroups = computed(() => {
+  const items = groups.value.filter((e) => e.grade?._id == gradeId.value)
+  return items
+})
 
 // Methods
 const onStudentSelect = () => {
@@ -366,9 +412,26 @@ const updateItem = async () => {
     })
 }
 
+const listGrades = async () => {
+  await gradeService
+    .list({ limit: 10000 })
+    .then(({ data }) => {
+      grades.value = data.docs
+    })
+    .catch((err) => {
+      useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
+    })
+}
+
+const listAllGroups = async () => {
+  groupService.list({ limit: 10000 }).then(({ data }) => {
+    groups.value = data.docs
+  })
+}
+
 const listStudents = async () => {
   await studentService
-    .list({ limit: 10000 })
+    .list({ limit: 10000, grade: gradeId.value, group: groupId.value })
     .then(({ data }) => {
       students.value = data.docs
     })
@@ -388,7 +451,8 @@ const getBooks = () => {
 }
 
 onMounted(() => {
-  listStudents()
+  listGrades()
+  listAllGroups()
   getBooks()
 })
 </script>

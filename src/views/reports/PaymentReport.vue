@@ -1,11 +1,12 @@
 <template>
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="mb-4 align-center flex-grow-0">
-      <v-col cols="6">
+      <v-col cols="12" class="d-flex align-center justify-space-between ga-2">
         <h2 class="text-h4 font-weight-bold text-auto">
           <v-icon class="text-auto me-2">mdi-file-chart</v-icon>
           تقرير المدفوعات
         </h2>
+        <v-btn icon="mdi-printer" size="small" v-print="printObj"></v-btn>
       </v-col>
     </v-row>
 
@@ -58,7 +59,13 @@
     </v-card>
 
     <!-- items Table -->
-    <v-card class="flex-grow-1">
+    <v-card class="flex-grow-1" id="printable">
+      <div class="print-title font-weight-bold mb-4 justify-space-between">
+        <div>تقرير المدفوعات</div>
+        <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
+          {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
+        </div>
+      </div>
       <v-data-table-server
         :headers="headers"
         :items="items"
@@ -125,6 +132,15 @@ import PayementsDetails from '@/components/reports/PaymentsDetails.vue'
 
 const items = ref([])
 const grades = ref([])
+
+// Print
+const printObj = ref({
+  id: 'printable',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const loading = ref(false)
 const toPreview = ref({})

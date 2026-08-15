@@ -2,7 +2,8 @@
   <v-dialog @after-leave="closeModal" max-width="1400">
     <v-card class="pa-4 px-2">
       <v-card-title class="text-h6 font-weight-bold">
-        تسليم ( {{ item.name }} ) للطلاب
+        <span> تسليم ( {{ item.name }} ) للطلاب</span>
+        <v-btn icon="mdi-printer" size="small" v-print="printObj" class="mr-2"></v-btn>
       </v-card-title>
       <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
         <v-row class="mb-4 align-center flex-grow-0">
@@ -52,7 +53,13 @@
         </v-row>
 
         <!-- items Table -->
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1" id="printable-table">
+          <div class="print-title font-weight-bold mb-4 justify-space-between">
+            <div>حالة دفع الطلاب للمذكرة {{ item.name }}</div>
+            <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
+              {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
+            </div>
+          </div>
           <v-data-table-server
             :headers="headers"
             :items="items"
@@ -131,6 +138,15 @@ import moment from 'moment'
 const items = ref([])
 const groups = ref([])
 const selectedRows = ref([])
+
+// Print
+const printObj = ref({
+  id: 'printable-table',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const loading = ref(false)
 const saveLoading = ref(false)
@@ -288,3 +304,18 @@ const payOnly = async () => {
   }
 }
 </script>
+
+<style lang="scss">
+@media print {
+  #printable-table {
+    th:first-child,
+    td:first-child {
+      display: none;
+    }
+    th:last-child,
+    td:last-child {
+      display: table-cell !important;
+    }
+  }
+}
+</style>

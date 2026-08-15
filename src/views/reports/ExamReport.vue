@@ -1,11 +1,12 @@
 <template>
   <v-container style="direction: rtl" fluid class="d-flex flex-column h-100">
     <v-row class="align-center flex-grow-0">
-      <v-col cols="6">
+      <v-col cols="12" class="d-flex align-center justify-space-between ga-2">
         <h2 class="text-h4 font-weight-bold text-auto">
           <v-icon class="text-auto me-2">mdi-file-chart</v-icon>
           تقرير الامتحانات
         </h2>
+        <v-btn icon="mdi-printer" size="small" v-print="printObj"></v-btn>
       </v-col>
     </v-row>
 
@@ -241,66 +242,74 @@
         </v-col> -->
       </v-row>
 
-      <v-data-table-server
-        :headers="headers"
-        :items="items"
-        :loading="loading"
-        item-value="_id"
-        class="elevation-0"
-        v-model:page="options.page"
-        v-model:items-per-page="options.limit"
-        :items-length="totalItems"
-        :items-per-page-options="perPage"
-      >
-        <template #item.percentage="{ item }">
-          <v-chip label :color="item.examStatus.color" class="font-weight-bold">
-            {{ item.percentage }}%
-          </v-chip>
-        </template>
+      <v-card id="printable">
+        <div class="print-title font-weight-bold mb-4 justify-space-between">
+          <div>تقرير الامتحانات</div>
+          <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
+            {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
+          </div>
+        </div>
+        <v-data-table-server
+          :headers="headers"
+          :items="items"
+          :loading="loading"
+          item-value="_id"
+          class="elevation-0"
+          v-model:page="options.page"
+          v-model:items-per-page="options.limit"
+          :items-length="totalItems"
+          :items-per-page-options="perPage"
+        >
+          <template #item.percentage="{ item }">
+            <v-chip label :color="item.examStatus.color" class="font-weight-bold">
+              {{ item.percentage }}%
+            </v-chip>
+          </template>
 
-        <template #item.notes="{ item }">
-          {{ item.notes || '—' }}
-        </template>
+          <template #item.notes="{ item }">
+            {{ item.notes || '—' }}
+          </template>
 
-        <template #item.rank="{ item }">
-          <v-chip label v-if="item.rank" color="primary" size="small" class="font-weight-bold">
-            {{ item.rank }}
-          </v-chip>
+          <template #item.rank="{ item }">
+            <v-chip label v-if="item.rank" color="primary" size="small" class="font-weight-bold">
+              {{ item.rank }}
+            </v-chip>
 
-          <span v-else>--</span>
-        </template>
+            <span v-else>--</span>
+          </template>
 
-        <template #item.score="{ item }">
-          <v-chip color="blue" variant="tonal" size="small" class="font-weight-bold" label>
-            {{ item.score }} / {{ item.maxScore }}
-          </v-chip>
-        </template>
+          <template #item.score="{ item }">
+            <v-chip color="blue" variant="tonal" size="small" class="font-weight-bold" label>
+              {{ item.score }} / {{ item.maxScore }}
+            </v-chip>
+          </template>
 
-        <template #item.examStatus="{ item }">
-          <v-chip label :color="item.examStatus.color" size="small" class="font-weight-bold">
-            {{ item.examStatus.title }}
-          </v-chip>
-        </template>
+          <template #item.examStatus="{ item }">
+            <v-chip label :color="item.examStatus.color" size="small" class="font-weight-bold">
+              {{ item.examStatus.title }}
+            </v-chip>
+          </template>
 
-        <template #item.correctedAt="{ item }">
-          {{ item.correctedAt ? moment(item.correctedAt).format('YYYY/MM/DD') : '...' }}
-        </template>
+          <template #item.correctedAt="{ item }">
+            {{ item.correctedAt ? moment(item.correctedAt).format('YYYY/MM/DD') : '...' }}
+          </template>
 
-        <template #item.actions="{ item }">
-          <v-btn size="small" variant="text">
-            <v-icon>mdi-dots-vertical</v-icon>
-            <v-menu activator="parent">
-              <v-list elevation="1">
-                <v-list-item
-                  title="عرض التفاصيل"
-                  append-icon="mdi-eye"
-                  @click="((toPreview = item), (previewDetailsDialog = true))"
-                ></v-list-item>
-              </v-list>
-            </v-menu>
-          </v-btn>
-        </template>
-      </v-data-table-server>
+          <template #item.actions="{ item }">
+            <v-btn size="small" variant="text">
+              <v-icon>mdi-dots-vertical</v-icon>
+              <v-menu activator="parent">
+                <v-list elevation="1">
+                  <v-list-item
+                    title="عرض التفاصيل"
+                    append-icon="mdi-eye"
+                    @click="((toPreview = item), (previewDetailsDialog = true))"
+                  ></v-list-item>
+                </v-list>
+              </v-menu>
+            </v-btn>
+          </template>
+        </v-data-table-server>
+      </v-card>
     </v-card>
 
     <AttendanceDetails
@@ -324,6 +333,15 @@ import AttendanceDetails from '@/components/reports/AttendanceDetails.vue'
 const items = ref([])
 const exams = ref([])
 const grades = ref([])
+
+// Print
+const printObj = ref({
+  id: 'printable',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const loading = ref(false)
 const toPreview = ref({})
@@ -494,3 +512,14 @@ onMounted(async () => {
   getGrades()
 })
 </script>
+
+<style lang="scss">
+@media print {
+  #printable {
+    th:last-child,
+    td:last-child {
+      display: table-cell !important;
+    }
+  }
+}
+</style>

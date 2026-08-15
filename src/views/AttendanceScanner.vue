@@ -207,11 +207,29 @@ const days = {
   Friday: 'الجمعة',
 }
 
+const sounds = {
+  warning: new Audio('/warning.aac'),
+  error: new Audio('/error.aac'),
+  success: new Audio('/success.aac'),
+}
+
 // دالة التركيز على حقل الإدخال
 const focusInput = () => {
   if (barcodeInput.value) {
     barcodeInput.value.focus()
   }
+}
+
+const playSound = (type) => {
+  const sound = sounds[type]
+
+  if (!sound) return
+
+  sound.pause()
+  sound.currentTime = 0
+  sound.play().catch((err) => {
+    console.warn('Could not play sound:', err)
+  })
 }
 
 // معالجة مسح الباركود
@@ -230,13 +248,14 @@ const handleBarcodeScan = async (attendAnyway = false) => {
     }
     if (student.showErr) {
       scanResult.value.status = 'warning'
+      playSound('warning')
     } else {
       scanResult.value.status = 'success'
-      // تنظيف الحقل والعودة للتركيز عليه
-      barcodeText.value = ''
+      playSound('success')
     }
   } catch (error) {
     console.log(error)
+    playSound('error')
     // معالجة الخطأ إذا لم يتم العثور على الطالب أو خطأ في السيرفر
     scanResult.value = {
       status: 'error',

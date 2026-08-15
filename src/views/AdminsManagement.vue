@@ -7,13 +7,20 @@
           ادارة المديرين
         </h2>
       </v-col>
-      <v-col cols="6" class="text-end">
+      <v-col cols="6" class="text-end d-flex align-center ga-2 justify-end">
+        <v-btn icon="mdi-printer" size="small" v-print="printObj"></v-btn>
         <v-btn color="primary" @click="editDialog = true">انشاء مستخدم جديد</v-btn>
       </v-col>
     </v-row>
 
     <!-- items Table -->
-    <v-card class="flex-grow-1">
+    <v-card id="printable" class="flex-grow-1">
+      <div class="print-title font-weight-bold mb-4 justify-space-between">
+        <div>المسؤولين</div>
+        <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
+          {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
+        </div>
+      </div>
       <v-data-table-server
         :headers="headers"
         :items="items"
@@ -144,6 +151,15 @@ watch(
   },
   { deep: true },
 )
+
+// Print
+const printObj = ref({
+  id: 'printable',
+  popTitle: ' -',
+  extraCss:
+    'https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.compat.css, https://cdn.bootcdn.net/ajax/libs/hover.css/2.3.1/css/hover-min.css',
+  extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+})
 
 const listItems = async () => {
   await adminService
