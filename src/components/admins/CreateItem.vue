@@ -79,7 +79,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, helpers } from '@vuelidate/validators'
+import { required, helpers, requiredIf, minLength } from '@vuelidate/validators'
 import adminService from '@/services/admin.js'
 import { useMainStore } from '@/stores'
 
@@ -136,7 +136,8 @@ const rules = computed(() => {
       required: helpers.withMessage('هذا الحقل مطلوب', required),
     },
     password: {
-      required: helpers.withMessage('هذا الحقل مطلوب', required),
+      requiredIf: helpers.withMessage('هذا الحقل مطلوب', requiredIf(!toUpdate._id)),
+      minLength: helpers.withMessage('يجب ادخال 6 مدخلات او اكثر', minLength(6)),
     },
     isAdmin: {
       required: helpers.withMessage('هذا الحقل مطلوب', required),
