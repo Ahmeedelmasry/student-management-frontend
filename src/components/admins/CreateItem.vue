@@ -9,7 +9,7 @@
         <v-row>
           <v-col cols="12" md="6">
             <v-text-field
-:id="Math.random()"
+              :id="Math.random()"
               density="compact"
               v-model="item.fullName"
               label="الاسم بالكامل"
@@ -19,7 +19,7 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
-:id="Math.random()"
+              :id="Math.random()"
               density="compact"
               v-model="item.userName"
               label="اسم تسجيل الدخول"
@@ -29,7 +29,7 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
-:id="Math.random()"
+              :id="Math.random()"
               :type="showPassword ? 'text' : 'password'"
               density="compact"
               v-model="item.password"
@@ -46,7 +46,7 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-select
-:id="Math.random()"
+              :id="Math.random()"
               density="compact"
               v-model="item.isAdmin"
               label="نوع المستخدم"
@@ -186,7 +186,7 @@ const updateItem = async () => {
   loading.value = true
   const body = { ...item.value }
 
-  if (!item.password) delete body.password
+  if (!item.value.password) delete body.password
 
   await adminService
     .update(body, toUpdate._id)
