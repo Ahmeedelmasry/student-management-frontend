@@ -129,6 +129,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import reportService from '@/services/report'
 import gradeService from '@/services/grade'
 import PayementsDetails from '@/components/reports/PaymentsDetails.vue'
+import moment from 'moment'
 
 const items = ref([])
 const grades = ref([])
