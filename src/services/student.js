@@ -15,6 +15,12 @@ class ModuleService extends ApiHelper {
       },
     )
   }
+
+  async getStudentWithMultipleFilters(params) {
+    return await httpClient.get(`${this.url}/all/multiple-filters`, {
+      params,
+    })
+  }
 }
 
 export default new ModuleService()

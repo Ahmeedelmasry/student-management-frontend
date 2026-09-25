@@ -9,7 +9,19 @@
       </v-col>
       <v-col cols="6" class="text-end d-flex align-center ga-2 justify-end">
         <v-btn icon="mdi-printer" size="small" v-print="printObj"></v-btn>
-        <v-btn color="primary" @click="editDialog = true"> تسجيل طالب جديد </v-btn>
+        <v-btn color="primary">
+          <span>عمليات الطلاب</span>
+          <v-icon class="mr-2 mt-1">mdi-chevron-down</v-icon>
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item title="تسجيل طالب جديد" @click="editDialog = true"></v-list-item>
+              <v-list-item
+                title="ارسال تقرير شهري"
+                @click="montlyReportDialog = true"
+              ></v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
       </v-col>
     </v-row>
     <v-card class="mb-4">
@@ -143,11 +155,13 @@
       :toUpdate="toUpdate"
       @refreshTableData="listItems"
     />
+    <montlyReport v-model="montlyReportDialog" @leave="montlyReportDialog = false" />
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
+import montlyReport from '@/components/students/StudentMonthlyReportDialog.vue'
 
 import studentService from '@/services/student.js'
 import gradeService from '@/services/grade.js'
@@ -164,6 +178,7 @@ const items = ref([])
 const grades = ref([])
 
 const loading = ref(false)
+const montlyReportDialog = ref(false)
 
 // Print
 const printObj = ref({
