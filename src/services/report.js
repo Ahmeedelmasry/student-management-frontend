@@ -41,6 +41,12 @@ class ModuleService extends ApiHelper {
       params,
     })
   }
+
+  async getMonthlyReport(params) {
+    return await httpClient.get(`${this.url}/monthly-reports`, {
+      params,
+    })
+  }
 }
 
 export default new ModuleService()

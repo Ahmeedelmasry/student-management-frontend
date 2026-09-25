@@ -129,6 +129,12 @@
               <v-icon size="8">mdi-circle</v-icon>
             </template>
           </v-list-item>
+
+          <v-list-item title="التقارير الشهرية" :to="{ name: 'MonthlyReport' }" color="primary">
+            <template #prepend>
+              <v-icon size="8">mdi-circle</v-icon>
+            </template>
+          </v-list-item>
         </v-list-group>
 
         <v-list-item

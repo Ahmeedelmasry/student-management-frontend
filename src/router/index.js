@@ -116,6 +116,14 @@ const routes = [
       title: 'التقارير - تقرير الامتحانات',
     },
   },
+  {
+    path: '/reports/monthly-report',
+    name: 'MonthlyReport',
+    component: () => import('@/views/reports/MonthlyReport.vue'),
+    meta: {
+      title: 'التقارير - التقارير الشهرية',
+    },
+  },
 ]
 
 const router = createRouter({
