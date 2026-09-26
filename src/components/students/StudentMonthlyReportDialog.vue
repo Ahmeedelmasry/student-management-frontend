@@ -31,7 +31,7 @@
               density="compact"
               variant="outlined"
               hide-details
-              @update:model-value="((options.groupIds = []), (options.searchWord = ''))"
+              @update:model-value="((options.groups = []), (options.searchWord = ''))"
               clearable
             />
           </v-col>
@@ -39,7 +39,7 @@
           <v-col>
             <v-autocomplete
               :id="Math.random()"
-              v-model="options.groupIds"
+              v-model="options.groups"
               :items="relatedGroups"
               item-title="name"
               item-value="_id"
@@ -53,16 +53,36 @@
               closable-chips
             />
           </v-col>
+
+          <v-col>
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="options.year"
+              :items="years"
+              label="السنة"
+              density="compact"
+              variant="outlined"
+              closable
+              hide-details
+            />
+          </v-col>
+
+          <v-col>
+            <v-autocomplete
+              :id="Math.random()"
+              v-model="options.month"
+              :items="months"
+              label="الشهر"
+              density="compact"
+              variant="outlined"
+              closable
+              hide-details
+            />
+          </v-col>
         </v-row>
 
         <!-- items Table -->
         <v-card class="flex-grow-1" id="printable-table">
-          <div class="print-title font-weight-bold mb-4 justify-space-between">
-            <div>حالة دفع الطلاب للمذكرة {{ item.name }}</div>
-            <div class="mt-1 text-grey" style="font-size: 12px; direction: ltr">
-              {{ moment(new Date()).format('YYYY-MM-DD h:m a') }}
-            </div>
-          </div>
           <v-data-table-server
             :headers="headers"
             :items="items"
@@ -99,31 +119,15 @@
       <v-card-actions>
         <v-spacer />
 
-        <!-- <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn> -->
+        <v-btn color="red" :disabled="saveLoading" @click="closeModal"> اغلاق </v-btn>
 
         <v-btn
           :loading="saveLoading"
-          :disabled="!selectedRows.length"
-          @click="payOnly"
+          :disabled="!options.grade"
           class="bg-blue text-white"
+          @click="submitForm"
         >
-          دفع فقط
-        </v-btn>
-        <v-btn
-          :loading="saveLoading"
-          :disabled="!selectedRows.length"
-          @click="saveData"
-          class="bg-blue text-white"
-        >
-          تسليم فقط
-        </v-btn>
-        <v-btn
-          :loading="saveLoading"
-          :disabled="!selectedRows.length"
-          @click="saveData(true)"
-          class="bg-primary text-white"
-        >
-          دفع وتسليم
+          ارسال تقرير
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -133,28 +137,70 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useMainStore } from '@/stores'
-import groupService from '@/services/group'
 import studentService from '@/services/student'
-import paymentService from '@/services/payment'
 import gradeService from '@/services/grade'
 import moment from 'moment'
 
 const items = ref([])
-const groups = ref([])
 const selectedRows = ref([])
 const grades = ref([])
 
 const loading = ref(false)
 const saveLoading = ref(false)
 
-const { item } = defineProps({
-  item: {
-    type: Object,
-    default: () => ({}),
-  },
-})
-
 const emits = defineEmits(['leave'])
+
+const years = ref([new Date().getFullYear(), new Date().getFullYear() - 1])
+const months = ref([
+  {
+    title: 'يناير',
+    value: 1,
+  },
+  {
+    title: 'فبراير',
+    value: 2,
+  },
+  {
+    title: 'مارس',
+    value: 3,
+  },
+  {
+    title: 'أبريل',
+    value: 4,
+  },
+  {
+    title: 'مايو',
+    value: 5,
+  },
+  {
+    title: 'يونيو',
+    value: 6,
+  },
+  {
+    title: 'يوليو',
+    value: 7,
+  },
+  {
+    title: 'أغسطس',
+    value: 8,
+  },
+  {
+    title: 'سبتمبر',
+    value: 9,
+  },
+  {
+    title: 'أكتوبر',
+    value: 10,
+  },
+  {
+    title: 'نوفمبر',
+    value: 11,
+  },
+  {
+    title: 'ديسمبر',
+    value: 12,
+  },
+])
 
 const headers = [
   { title: 'الطالب', key: 'fullName', sortable: false },
@@ -164,13 +210,13 @@ const headers = [
   { title: 'رقم الهاتف', key: 'studentPhone', sortable: false },
   { title: 'رقم ولي الامر', key: 'parentPhone', sortable: false },
   { title: 'تاريخ التسجيل', key: 'registrationDate', sortable: false },
-  { title: 'تم الدفع', key: 'isPaid', sortable: false },
-  { title: 'تاريخ الدفع', key: 'paymentDate', sortable: false },
 ]
 
 const options = ref({
-  groupIds: [],
+  groups: [],
   grade: null,
+  year: null,
+  month: null,
   searchWord: '',
 })
 
@@ -182,6 +228,7 @@ watch(
       listItems()
     } else {
       items.value = []
+      selectedRows.value = []
     }
   },
   { deep: true },
@@ -205,6 +252,14 @@ const getGrades = async () => {
 }
 
 const closeModal = () => {
+  options.value = {
+    groups: [],
+    grade: null,
+    year: null,
+    month: null,
+    searchWord: '',
+  }
+  selectedRows.value = []
   emits('leave')
 }
 
@@ -214,7 +269,6 @@ const listItems = async () => {
     .getStudentWithMultipleFilters({ ...options.value, limit: 10000 })
     .then(({ data }) => {
       items.value = data.docs
-      console.log(data)
     })
     .catch((err) => console.log(err))
     .finally(() => {
@@ -222,9 +276,10 @@ const listItems = async () => {
     })
 }
 
-const saveData = async (pay = false) => {
-  await bookAssignService
-    .bulkAssignStudents(item._id, selectedRows.value, { payNow: pay })
+const submitForm = async () => {
+  saveLoading.value = true
+  await studentService
+    .sendMonthlyReport(options.value.grade, { ...options.value, students: selectedRows.value })
     .then(({ data }) => {
       useMainStore().callResponse(true, data.message, 1)
       closeModal()
@@ -233,42 +288,6 @@ const saveData = async (pay = false) => {
       useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
     })
     .finally(() => (saveLoading.value = false))
-}
-
-const payOnly = async () => {
-  const bodyItems = []
-  selectedRows.value.forEach((studentId) => {
-    const student = items.value.find((e) => e._id == studentId)
-    if (student) {
-      const paymentBody = {
-        student: student._id,
-        group: student.group._id,
-        grade: student.grade._id,
-        type: 'Book',
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear(),
-        book: item._id,
-        paymentMethod: 'Cash',
-        amount: item.price,
-      }
-      bodyItems.push(paymentBody)
-    }
-  })
-
-  if (bodyItems.length) {
-    await paymentService
-      .bulkBookPay({
-        rows: bodyItems,
-      })
-      .then(({ data }) => {
-        useMainStore().callResponse(true, data.message, 1)
-        closeModal()
-      })
-      .catch((err) => {
-        useMainStore().callResponse(true, err.response?.data?.message || 'حدث خطأ ما', 2)
-      })
-      .finally(() => (saveLoading.value = false))
-  }
 }
 
 onMounted(() => {
